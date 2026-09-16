@@ -194,6 +194,14 @@ import { fabrik2, fabrik3 } from 'math/ik'; // inverse kinematics
       </a>
     </td>
   </tr>
+  <tr>
+    <td align="center">
+      <a href="https://pmndrs.github.io/math/examples/#example-frustum-culling">
+        <img src="./examples/public/screenshots/example-frustum-culling.png" width="180" height="120" style="object-fit:cover;"/><br/>
+        Frustum Culling
+      </a>
+    </td>
+  </tr>
 </table>
 
 ## Documentation

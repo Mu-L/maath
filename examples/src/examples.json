@@ -124,5 +124,11 @@
         "description": "The shape is never drawn as a shape. A lattice of probes each asks math's polygon2 how far it is from a wobbling blob, and the answers alone draw the picture: hue for the sign, brightness banded so the bright rings are contours and the innermost one is the outline. Switch on needles and polygon2.closestPoint aims one from every probe, turning the gradient into a flow. The blob is a radius per angle, built with polar.toVec2.",
         "tags": ["polygon2", "signedDistance", "closestPoint", "polar", "shapes", "vec2"],
         "category": "shapes"
+    },
+    "example-frustum-culling": {
+        "title": "Frustum Culling",
+        "description": "Agents patrolling a little city, each seeing through a camera of its own. Every agent's six planes come from math's frustum, and every building and orb is tested against every agent once a frame with intersectsBox3 and intersectsSphere. Whatever an agent can see takes that agent's colour, so the map is painted by who is looking at what, and anything unseen stays dark. The cones are recovered from frustum.corners.",
+        "tags": ["frustum", "culling", "box3", "sphere", "mat4", "color", "shapes"],
+        "category": "shapes"
     }
 }
