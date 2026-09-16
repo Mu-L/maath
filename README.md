@@ -181,6 +181,12 @@ import { fabrik2, fabrik3 } from 'math/ik'; // inverse kinematics
         Easing
       </a>
     </td>
+    <td align="center">
+      <a href="https://pmndrs.github.io/math/examples/#example-circle-physics">
+        <img src="./examples/public/screenshots/example-circle-physics.png" width="180" height="120" style="object-fit:cover;"/><br/>
+        Circle Physics
+      </a>
+    </td>
   </tr>
 </table>
 

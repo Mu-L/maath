@@ -112,5 +112,11 @@
         "description": "A small-multiples gallery of math's easing functions - one card per curve, each plotting the function against a linear reference with a dot tracing it at a shared, ping-ponging time.",
         "tags": ["easing", "time", "animation"],
         "category": "time"
+    },
+    "example-circle-physics": {
+        "title": "Circle Physics",
+        "description": "A cluster of circles held together by its own gravity, solved with substepped XPBD. There are no walls, and the pointer is just a body with no inverse mass, so ploughing through the pack is the same contact solve as everything else.",
+        "tags": ["physics", "xpbd", "simulation", "vec2", "broadphase", "gravity"],
+        "category": "simulation"
     }
 }
