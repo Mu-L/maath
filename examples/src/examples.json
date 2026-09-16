@@ -130,5 +130,11 @@
         "description": "Agents patrolling a little city, each seeing through a camera of its own. Every agent's six planes come from math's frustum, and every building and orb is tested against every agent once a frame with intersectsBox3 and intersectsSphere. Whatever an agent can see takes that agent's colour, so the map is painted by who is looking at what, and anything unseen stays dark. The cones are recovered from frustum.corners.",
         "tags": ["frustum", "culling", "box3", "sphere", "mat4", "color", "shapes"],
         "category": "shapes"
+    },
+    "example-dual-quaternion-skinning": {
+        "title": "Dual Quaternion Skinning",
+        "description": "The candy wrapper, side by side. Two identical tubes bound to the same two bones and twisted by the same angle, differing only in how the bone transforms are blended. On the left mat4s blended by weighted sum - averaging two rotation matrices is not a rotation, so halfway through a half turn the tube pinches to a thread. On the right the same bones as math's quat2, where lerp then normalize lands back on a rigid transform and the volume survives.",
+        "tags": ["quat2", "dual-quaternion", "skinning", "mat4", "quat", "basics"],
+        "category": "basics"
     }
 }

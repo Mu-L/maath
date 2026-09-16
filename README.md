@@ -201,6 +201,12 @@ import { fabrik2, fabrik3 } from 'math/ik'; // inverse kinematics
         Frustum Culling
       </a>
     </td>
+    <td align="center">
+      <a href="https://pmndrs.github.io/math/examples/#example-dual-quaternion-skinning">
+        <img src="./examples/public/screenshots/example-dual-quaternion-skinning.png" width="180" height="120" style="object-fit:cover;"/><br/>
+        Dual Quaternion Skinning
+      </a>
+    </td>
   </tr>
 </table>
 
