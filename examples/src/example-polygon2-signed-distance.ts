@@ -27,11 +27,15 @@ import { createRenderer } from './common/renderer';
 
 const VERTS = 36; // outline points
 const BASE = 0.55;
-const VIEW = 1.55; // half-height of the world the probes cover
-const SPAN = 2.5; // half-width
+const VIEW = 1.5; // half-height of the world the probes cover
+const SPAN = 2.9; // half-width
+// the camera sees this much more than the lattice covers, so the field sits
+// inset with clear space around it rather than running under the gallery's
+// title and description
+const PAD = 1.74;
 const MAX_COLUMNS = 96;
-const NEEDLE = 0.07; // the longest a needle is drawn, whatever the distance
-const DOT = 0.011; // every probe is the same size, so only colour carries meaning
+const NEEDLE = 0.085; // the longest a needle is drawn, whatever the distance
+const DOT = 0.016; // every probe is the same size, so only colour carries meaning
 const INSIDE_HUE = 0.06; // pink end of the palette
 const OUTSIDE_HUE = 0.55; // blue end
 // the dots are spheres, so they occupy depth either side of z = 0. Needles and
@@ -102,9 +106,9 @@ camera.position[2] = 5;
 scene.add(camera);
 
 function fitCamera(): void {
-    camera.top = VIEW;
-    camera.bottom = -VIEW;
-    camera.left = -VIEW * (window.innerWidth / window.innerHeight);
+    camera.top = VIEW * PAD;
+    camera.bottom = -VIEW * PAD;
+    camera.left = -camera.top * (window.innerWidth / window.innerHeight);
     camera.right = -camera.left;
     camera.updateProjectionMatrix();
 }

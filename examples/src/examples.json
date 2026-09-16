@@ -121,7 +121,7 @@
     },
     "example-polygon2-signed-distance": {
         "title": "Polygon2 Signed Distance",
-        "description": "The shape is never drawn as a shape. A lattice of probes each asks math's polygon2 how far it is from a wobbling blob, and the answers alone draw the picture: hue for the sign, brightness banded so the bright rings are contours and the innermost one is the outline. Switch on needles and polygon2.closestPoint aims one from every probe, turning the gradient into a flow. The blob is a radius per angle, built with polar.toVec2.",
+        "description": "The shape is never drawn as a shape. A lattice of probes asks math's polygon2 how far it is from a wobbling blob: hue carries the sign, and banded brightness turns the bright rings into contours, the innermost one the outline. Needles aim one from every probe with polygon2.closestPoint. The blob is a radius per angle, from polar.toVec2.",
         "tags": ["polygon2", "signedDistance", "closestPoint", "polar", "shapes", "vec2"],
         "category": "shapes"
     },
