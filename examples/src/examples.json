@@ -1,6 +1,6 @@
 {
     "example-look-at": {
-        "title": "Look At",
+        "title": "Quaternion Look At",
         "description": "A grid of hand-built arrows that all turn to point at a glowing orb as it drifts overhead — like sunflowers tracking the sun. Each aims with math's quat.rotationTo, the shortest rotation from its +Y tip onto the target direction.",
         "tags": ["quaternion", "rotationTo", "look-at", "vec3"],
         "category": "basics"
@@ -12,7 +12,7 @@
         "category": "basics"
     },
     "example-contains-point": {
-        "title": "Contains Point",
+        "title": "OBB3 Contains Point",
         "description": "An oriented box (math's obb3) tumbles through a lattice of points. Each point asks obb3.containsPoint every frame; inside points glow the rainbow, so the never-drawn box is revealed as the tumbling slab of lit points it carves out.",
         "tags": ["shapes", "containsPoint", "obb3"],
         "category": "shapes"
@@ -102,7 +102,7 @@
         "category": "basics"
     },
     "example-spring": {
-        "title": "Spring",
+        "title": "Spring2 Tail",
         "description": "A springy tail that chases the pointer — the head springs to the cursor and each bead springs to the one ahead (math's spring2, under-damped so it overshoots and settles).",
         "tags": ["spring", "time", "vec2"],
         "category": "time"

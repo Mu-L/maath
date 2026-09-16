@@ -58,7 +58,7 @@ import { fabrik2, fabrik3 } from 'math/ik'; // inverse kinematics
     <td align="center">
       <a href="https://pmndrs.github.io/math/examples/#example-look-at">
         <img src="./examples/public/screenshots/example-look-at.png" width="180" height="120" style="object-fit:cover;"/><br/>
-        Look At
+        Quaternion Look At
       </a>
     </td>
     <td align="center">
@@ -70,7 +70,7 @@ import { fabrik2, fabrik3 } from 'math/ik'; // inverse kinematics
     <td align="center">
       <a href="https://pmndrs.github.io/math/examples/#example-contains-point">
         <img src="./examples/public/screenshots/example-contains-point.png" width="180" height="120" style="object-fit:cover;"/><br/>
-        Contains Point
+        OBB3 Contains Point
       </a>
     </td>
   </tr>
@@ -170,7 +170,7 @@ import { fabrik2, fabrik3 } from 'math/ik'; // inverse kinematics
     <td align="center">
       <a href="https://pmndrs.github.io/math/examples/#example-spring">
         <img src="./examples/public/screenshots/example-spring.png" width="180" height="120" style="object-fit:cover;"/><br/>
-        Spring
+        Spring2 Tail
       </a>
     </td>
   </tr>
