@@ -187,6 +187,12 @@ import { fabrik2, fabrik3 } from 'math/ik'; // inverse kinematics
         Circle Physics
       </a>
     </td>
+    <td align="center">
+      <a href="https://pmndrs.github.io/math/examples/#example-polygon2-signed-distance">
+        <img src="./examples/public/screenshots/example-polygon2-signed-distance.png" width="180" height="120" style="object-fit:cover;"/><br/>
+        Polygon2 Signed Distance
+      </a>
+    </td>
   </tr>
 </table>
 
