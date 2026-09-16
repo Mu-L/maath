@@ -8,7 +8,7 @@ math is a collection of math helpers for graphics and simulations.
 - **Data-oriented**: data-in, data-out functions over caller-owned data, without owning the data lifecycle.
 
 ```sh
-> npm install math@canary
+> npm install math
 ```
 
 ## What's inside
