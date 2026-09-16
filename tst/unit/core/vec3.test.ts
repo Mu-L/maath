@@ -358,6 +358,21 @@ describe('vec3', () => {
             expect(result[1]).toBeCloseTo(0);
             expect(result[2]).toBeCloseTo(1);
         });
+
+        it('should rotate around a pivot away from the origin', () => {
+            const result = vec3.rotateX(out, [0, 1, 0], [0, 2, 2], Math.PI / 2);
+            expect(result[0]).toBeCloseTo(0);
+            expect(result[1]).toBeCloseTo(4);
+            expect(result[2]).toBeCloseTo(1);
+        });
+
+        it('should leave x untouched however far away the pivot is', () => {
+            // a rotation about x cannot move x, and reaching that by
+            // subtracting the pivot and adding it back would cancel the point
+            // away entirely once the pivot is past the precision of a double
+            const result = vec3.rotateX(out, [1, 2, 3], [1e17, 5, 6], Math.PI / 3);
+            expect(result[0]).toBe(1);
+        });
     });
 
     describe('rotateY', () => {
@@ -368,6 +383,13 @@ describe('vec3', () => {
             expect(result[1]).toBeCloseTo(0);
             expect(result[2]).toBeCloseTo(-1);
         });
+
+        it('should rotate around a pivot away from the origin', () => {
+            const result = vec3.rotateY(out, [1, 0, 0], [2, 0, 2], Math.PI / 2);
+            expect(result[0]).toBeCloseTo(0);
+            expect(result[1]).toBeCloseTo(0);
+            expect(result[2]).toBeCloseTo(3);
+        });
     });
 
     describe('rotateZ', () => {
@@ -377,6 +399,29 @@ describe('vec3', () => {
             expect(result[0]).toBeCloseTo(0);
             expect(result[1]).toBeCloseTo(1);
             expect(result[2]).toBeCloseTo(0);
+        });
+
+        it('should rotate around a pivot away from the origin', () => {
+            const result = vec3.rotateZ(out, [1, 0, 0], [2, 2, 0], Math.PI / 2);
+            expect(result[0]).toBeCloseTo(4);
+            expect(result[1]).toBeCloseTo(1);
+            expect(result[2]).toBeCloseTo(0);
+        });
+
+        it('should accept the point it is writing into', () => {
+            const point: Vec3 = [1, 0, 0];
+            vec3.rotateZ(point, point, [2, 2, 0], Math.PI / 2);
+            expect(point[0]).toBeCloseTo(4);
+            expect(point[1]).toBeCloseTo(1);
+            expect(point[2]).toBeCloseTo(0);
+        });
+
+        it('should accept the pivot it is writing into', () => {
+            const pivot: Vec3 = [2, 2, 0];
+            vec3.rotateZ(pivot, [1, 0, 0], pivot, Math.PI / 2);
+            expect(pivot[0]).toBeCloseTo(4);
+            expect(pivot[1]).toBeCloseTo(1);
+            expect(pivot[2]).toBeCloseTo(0);
         });
     });
 
