@@ -118,4 +118,52 @@ group("vec3 ops 10k @core @vec3", () => {
     };
     return [acc, ...out];
   });
+
+  bench("rotateX", function* () {
+    const a = makeVecs(1);
+    const pivot = makeVecs(2);
+    const out = vec3.create();
+
+    const acc = yield () => {
+      let acc = 0;
+      for (let i = 0; i < N; i++) {
+        vec3.rotateX(out, a[i], pivot[i], 0.7);
+        acc += out[0];
+      }
+      return acc;
+    };
+    return [acc, ...out];
+  });
+
+  bench("rotateY", function* () {
+    const a = makeVecs(1);
+    const pivot = makeVecs(2);
+    const out = vec3.create();
+
+    const acc = yield () => {
+      let acc = 0;
+      for (let i = 0; i < N; i++) {
+        vec3.rotateY(out, a[i], pivot[i], 0.7);
+        acc += out[1];
+      }
+      return acc;
+    };
+    return [acc, ...out];
+  });
+
+  bench("rotateZ", function* () {
+    const a = makeVecs(1);
+    const pivot = makeVecs(2);
+    const out = vec3.create();
+
+    const acc = yield () => {
+      let acc = 0;
+      for (let i = 0; i < N; i++) {
+        vec3.rotateZ(out, a[i], pivot[i], 0.7);
+        acc += out[2];
+      }
+      return acc;
+    };
+    return [acc, ...out];
+  });
 });

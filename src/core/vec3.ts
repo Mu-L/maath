@@ -681,22 +681,14 @@ export function transformQuat(out: Vec3, a: Vec3, q: Quat): Vec3 {
  * @returns out
  */
 export function rotateX(out: Vec3, a: Vec3, b: Vec3, rad: number): Vec3 {
-    const p: number[] = [];
-    const r: number[] = [];
-    //Translate point to the origin
-    p[0] = a[0] - b[0];
-    p[1] = a[1] - b[1];
-    p[2] = a[2] - b[2];
+    const p1 = a[1] - b[1];
+    const p2 = a[2] - b[2];
+    const c = Math.cos(rad);
+    const s = Math.sin(rad);
 
-    //perform rotation
-    r[0] = p[0];
-    r[1] = p[1] * Math.cos(rad) - p[2] * Math.sin(rad);
-    r[2] = p[1] * Math.sin(rad) + p[2] * Math.cos(rad);
-
-    //translate to correct position
-    out[0] = r[0] + b[0];
-    out[1] = r[1] + b[1];
-    out[2] = r[2] + b[2];
+    out[0] = a[0];
+    out[1] = p1 * c - p2 * s + b[1];
+    out[2] = p1 * s + p2 * c + b[2];
 
     return out;
 }
@@ -710,23 +702,14 @@ export function rotateX(out: Vec3, a: Vec3, b: Vec3, rad: number): Vec3 {
  * @returns out
  */
 export function rotateY(out: Vec3, a: Vec3, b: Vec3, rad: number): Vec3 {
-    const p: number[] = [];
-    const r: number[] = [];
+    const p0 = a[0] - b[0];
+    const p2 = a[2] - b[2];
+    const c = Math.cos(rad);
+    const s = Math.sin(rad);
 
-    // translate point to the origin
-    p[0] = a[0] - b[0];
-    p[1] = a[1] - b[1];
-    p[2] = a[2] - b[2];
-
-    // perform rotation
-    r[0] = p[2] * Math.sin(rad) + p[0] * Math.cos(rad);
-    r[1] = p[1];
-    r[2] = p[2] * Math.cos(rad) - p[0] * Math.sin(rad);
-
-    // translate to correct position
-    out[0] = r[0] + b[0];
-    out[1] = r[1] + b[1];
-    out[2] = r[2] + b[2];
+    out[0] = p2 * s + p0 * c + b[0];
+    out[1] = a[1];
+    out[2] = p2 * c - p0 * s + b[2];
 
     return out;
 }
@@ -740,22 +723,14 @@ export function rotateY(out: Vec3, a: Vec3, b: Vec3, rad: number): Vec3 {
  * @returns out
  */
 export function rotateZ(out: Vec3, a: Vec3, b: Vec3, rad: number): Vec3 {
-    const p: number[] = [];
-    const r: number[] = [];
-    // translate point to the origin
-    p[0] = a[0] - b[0];
-    p[1] = a[1] - b[1];
-    p[2] = a[2] - b[2];
+    const p0 = a[0] - b[0];
+    const p1 = a[1] - b[1];
+    const c = Math.cos(rad);
+    const s = Math.sin(rad);
 
-    // perform rotation
-    r[0] = p[0] * Math.cos(rad) - p[1] * Math.sin(rad);
-    r[1] = p[0] * Math.sin(rad) + p[1] * Math.cos(rad);
-    r[2] = p[2];
-
-    // translate to correct position
-    out[0] = r[0] + b[0];
-    out[1] = r[1] + b[1];
-    out[2] = r[2] + b[2];
+    out[0] = p0 * c - p1 * s + b[0];
+    out[1] = p0 * s + p1 * c + b[1];
+    out[2] = a[2];
 
     return out;
 }
