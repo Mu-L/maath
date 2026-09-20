@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Sphere, Vec3 } from '../../../src/shapes';
+import type { Vec3 } from '../../../src';
+import type { Sphere } from '../../../src/shapes';
 import { sphere } from '../../../src/shapes';
 
 describe('sphere', () => {

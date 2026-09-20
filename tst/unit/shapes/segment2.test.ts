@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { segment2, type Vec2 } from '../../../src/shapes';
+import type { Vec2 } from '../../../src';
+import { segment2 } from '../../../src/shapes';
 
 describe('segment2.closestPoint', () => {
     it('returns the closest point for a point inside the segment', () => {
