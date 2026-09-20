@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import type { Mat4, Vec3 } from '../../../src';
 import { mat4, vec3 } from '../../../src';
-import type { Box3, Frustum, FrustumCorners, Mat4, Sphere, Vec3 } from '../../../src/shapes';
+import type { Box3, Frustum, FrustumCorners, Sphere } from '../../../src/shapes';
 import { frustum, plane3 } from '../../../src/shapes';
 
 // A symmetric perspective frustum, camera at origin looking down -Z:

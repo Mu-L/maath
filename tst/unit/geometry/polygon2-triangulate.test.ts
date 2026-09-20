@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import type { Vec2 } from '../../../src';
 import { triangulatePolygon2 } from '../../../src/geometry';
-import { polygon2, triangle2, type Vec2 } from '../../../src/shapes';
+import { polygon2, triangle2 } from '../../../src/shapes';
 
 describe('triangulatePolygon2', () => {
     const square = [0, 0, 1, 0, 1, 1, 0, 1];

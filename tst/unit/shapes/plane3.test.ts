@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import type { Mat4, Vec3 } from '../../../src';
 import { vec3 } from '../../../src';
-import type { Mat4, Vec3 } from '../../../src/shapes';
 import { plane3 } from '../../../src/shapes';
 
 describe('plane3', () => {
