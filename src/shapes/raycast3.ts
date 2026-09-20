@@ -1,3 +1,4 @@
+import type { Const } from '../core/const';
 import type { Vec3 } from '../core/vec3';
 import type { Box3 } from './box3';
 
@@ -39,12 +40,12 @@ export function createIntersectsTriangleResult(): IntersectsTriangleResult {
  */
 export function intersectsTriangle(
     out: IntersectsTriangleResult,
-    origin: Vec3,
-    direction: Vec3,
+    origin: Const<Vec3>,
+    direction: Const<Vec3>,
     length: number,
-    a: Vec3,
-    b: Vec3,
-    c: Vec3,
+    a: Const<Vec3>,
+    b: Const<Vec3>,
+    c: Const<Vec3>,
     backfaceCulling: boolean,
 ): void {
     // compute edge1 = b - a
@@ -165,7 +166,7 @@ export function intersectsTriangle(
  * @param aabb AABB to test against
  * @returns true if ray intersects the AABB, false otherwise
  */
-export function intersectsBox3(origin: Vec3, direction: Vec3, length: number, aabb: Box3): boolean {
+export function intersectsBox3(origin: Const<Vec3>, direction: Const<Vec3>, length: number, aabb: Const<Box3>): boolean {
     let tmin = 0;
     let tmax = length;
 

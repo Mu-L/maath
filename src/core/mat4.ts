@@ -1,3 +1,4 @@
+import type { Const } from './const';
 import { EPSILON } from './scalar';
 import type { Quat } from './quat';
 import type { Quat2 } from './quat2';
@@ -23,6 +24,7 @@ export type Mat4 = [
     e16: number,
 ];
 
+
 /**
  * Creates a new identity mat4
  *
@@ -38,7 +40,7 @@ export function create(): Mat4 {
  * @param a matrix to clone
  * @returns a new 4x4 matrix
  */
-export function clone(a: Mat4): Mat4 {
+export function clone(a: Const<Mat4>): Mat4 {
     return [a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]];
 }
 
@@ -49,7 +51,7 @@ export function clone(a: Mat4): Mat4 {
  * @param a the source matrix
  * @returns out
  */
-export function copy(out: Mat4, a: Mat4): Mat4 {
+export function copy(out: Mat4, a: Const<Mat4>): Mat4 {
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -230,7 +232,7 @@ export function zero(out: Mat4): Mat4 {
  * @param a the source matrix
  * @returns out
  */
-export function transpose(out: Mat4, a: Mat4): Mat4 {
+export function transpose(out: Mat4, a: Const<Mat4>): Mat4 {
     // If we are transposing ourselves we can skip a few steps but have to cache some values
     if (out === a) {
         const a01 = a[1];
@@ -281,7 +283,7 @@ export function transpose(out: Mat4, a: Mat4): Mat4 {
  * @param a the source matrix
  * @returns out, or null if source matrix is not invertible
  */
-export function invert(out: Mat4, a: Mat4): Mat4 | null {
+export function invert(out: Mat4, a: Const<Mat4>): Mat4 | null {
     const a00 = a[0];
     const a01 = a[1];
     const a02 = a[2];
@@ -349,7 +351,7 @@ export function invert(out: Mat4, a: Mat4): Mat4 | null {
  * @param a the source matrix
  * @returns out, or null if the 3x3 part is not invertible
  */
-export function invert3x3(out: Mat4, a: Mat4): Mat4 | null {
+export function invert3x3(out: Mat4, a: Const<Mat4>): Mat4 | null {
     const a00 = a[0];
     const a01 = a[1];
     const a02 = a[2];
@@ -398,7 +400,7 @@ export function invert3x3(out: Mat4, a: Mat4): Mat4 | null {
  * @param a the source matrix
  * @returns out
  */
-export function adjoint(out: Mat4, a: Mat4): Mat4 {
+export function adjoint(out: Mat4, a: Const<Mat4>): Mat4 {
     const a00 = a[0];
     const a01 = a[1];
     const a02 = a[2];
@@ -454,7 +456,7 @@ export function adjoint(out: Mat4, a: Mat4): Mat4 {
  * @param a the source matrix
  * @returns determinant of a
  */
-export function determinant(a: Mat4): number {
+export function determinant(a: Const<Mat4>): number {
     const a00 = a[0];
     const a01 = a[1];
     const a02 = a[2];
@@ -495,7 +497,7 @@ export function determinant(a: Mat4): number {
  * @param b the second operand
  * @returns out
  */
-export function multiply(out: Mat4, a: Mat4, b: Mat4): Mat4 {
+export function multiply(out: Mat4, a: Const<Mat4>, b: Const<Mat4>): Mat4 {
     const a00 = a[0];
     const a01 = a[1];
     const a02 = a[2];
@@ -562,7 +564,7 @@ export function multiply(out: Mat4, a: Mat4, b: Mat4): Mat4 {
  * @param b the second operand
  * @returns out
  */
-export function multiply3x3(out: Mat4, a: Mat4, b: Mat4): Mat4 {
+export function multiply3x3(out: Mat4, a: Const<Mat4>, b: Const<Mat4>): Mat4 {
     const a00 = a[0];
     const a01 = a[1];
     const a02 = a[2];
@@ -616,7 +618,7 @@ export function multiply3x3(out: Mat4, a: Mat4, b: Mat4): Mat4 {
  * @param b the second operand (will be transposed)
  * @returns out
  */
-export function multiply3x3RightTransposed(out: Mat4, a: Mat4, b: Mat4): Mat4 {
+export function multiply3x3RightTransposed(out: Mat4, a: Const<Mat4>, b: Const<Mat4>): Mat4 {
     const a00 = a[0];
     const a01 = a[1];
     const a02 = a[2];
@@ -667,7 +669,7 @@ export function multiply3x3RightTransposed(out: Mat4, a: Mat4, b: Mat4): Mat4 {
  * @param vec the vector to transform
  * @returns out
  */
-export function multiply3x3TransposedVec(out: Vec3, mat: Mat4, vec: Vec3): Vec3 {
+export function multiply3x3TransposedVec(out: Vec3, mat: Const<Mat4>, vec: Const<Vec3>): Vec3 {
     const x = vec[0];
     const y = vec[1];
     const z = vec[2];
@@ -687,7 +689,7 @@ export function multiply3x3TransposedVec(out: Vec3, mat: Mat4, vec: Vec3): Vec3 
  * @param vec the vector to transform
  * @returns out
  */
-export function multiply3x3Vec(out: Vec3, mat: Mat4, vec: Vec3): Vec3 {
+export function multiply3x3Vec(out: Vec3, mat: Const<Mat4>, vec: Const<Vec3>): Vec3 {
     const x = vec[0];
     const y = vec[1];
     const z = vec[2];
@@ -707,7 +709,7 @@ export function multiply3x3Vec(out: Vec3, mat: Mat4, vec: Vec3): Vec3 {
  * @param v the vector to create the cross product matrix from
  * @returns out
  */
-export function crossProductMatrix(out: Mat4, v: Vec3): Mat4 {
+export function crossProductMatrix(out: Mat4, v: Const<Vec3>): Mat4 {
     const x = v[0];
     const y = v[1];
     const z = v[2];
@@ -741,7 +743,7 @@ export function crossProductMatrix(out: Mat4, v: Vec3): Mat4 {
  * @param v vector to translate by
  * @returns out
  */
-export function translate(out: Mat4, a: Mat4, v: Vec3): Mat4 {
+export function translate(out: Mat4, a: Const<Mat4>, v: Const<Vec3>): Mat4 {
     const x = v[0];
     const y = v[1];
     const z = v[2];
@@ -807,7 +809,7 @@ export function translate(out: Mat4, a: Mat4, v: Vec3): Mat4 {
  * @param v the vec3 to scale the matrix by
  * @returns out
  **/
-export function scale(out: Mat4, a: Mat4, v: Vec3): Mat4 {
+export function scale(out: Mat4, a: Const<Mat4>, v: Const<Vec3>): Mat4 {
     const x = v[0];
     const y = v[1];
     const z = v[2];
@@ -840,7 +842,7 @@ export function scale(out: Mat4, a: Mat4, v: Vec3): Mat4 {
  * @param axis the axis to rotate around
  * @returns out
  */
-export function rotate(out: Mat4, a: Mat4, rad: number, axis: Vec3): Mat4 | null {
+export function rotate(out: Mat4, a: Const<Mat4>, rad: number, axis: Const<Vec3>): Mat4 | null {
     let x = axis[0];
     let y = axis[1];
     let z = axis[2];
@@ -915,7 +917,7 @@ export function rotate(out: Mat4, a: Mat4, rad: number, axis: Vec3): Mat4 | null
  * @param rad the angle to rotate the matrix by
  * @returns out
  */
-export function rotateX(out: Mat4, a: Mat4, rad: number): Mat4 {
+export function rotateX(out: Mat4, a: Const<Mat4>, rad: number): Mat4 {
     const s = Math.sin(rad);
     const c = Math.cos(rad);
     const a10 = a[4];
@@ -959,7 +961,7 @@ export function rotateX(out: Mat4, a: Mat4, rad: number): Mat4 {
  * @param rad the angle to rotate the matrix by
  * @returns out
  */
-export function rotateY(out: Mat4, a: Mat4, rad: number): Mat4 {
+export function rotateY(out: Mat4, a: Const<Mat4>, rad: number): Mat4 {
     const s = Math.sin(rad);
     const c = Math.cos(rad);
     const a00 = a[0];
@@ -1003,7 +1005,7 @@ export function rotateY(out: Mat4, a: Mat4, rad: number): Mat4 {
  * @param rad the angle to rotate the matrix by
  * @returns out
  */
-export function rotateZ(out: Mat4, a: Mat4, rad: number): Mat4 {
+export function rotateZ(out: Mat4, a: Const<Mat4>, rad: number): Mat4 {
     const s = Math.sin(rad);
     const c = Math.cos(rad);
     const a00 = a[0];
@@ -1050,7 +1052,7 @@ export function rotateZ(out: Mat4, a: Mat4, rad: number): Mat4 {
  * @param v Translation vector
  * @returns out
  */
-export function fromTranslation(out: Mat4, v: Vec3): Mat4 {
+export function fromTranslation(out: Mat4, v: Const<Vec3>): Mat4 {
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -1081,7 +1083,7 @@ export function fromTranslation(out: Mat4, v: Vec3): Mat4 {
  * @param v Scaling vector
  * @returns out
  */
-export function fromScaling(out: Mat4, v: Vec3): Mat4 {
+export function fromScaling(out: Mat4, v: Const<Vec3>): Mat4 {
     out[0] = v[0];
     out[1] = 0;
     out[2] = 0;
@@ -1113,7 +1115,7 @@ export function fromScaling(out: Mat4, v: Vec3): Mat4 {
  * @param axis the axis to rotate around
  * @returns out
  */
-export function fromRotation(out: Mat4, rad: number, axis: Vec3): Mat4 | null {
+export function fromRotation(out: Mat4, rad: number, axis: Const<Vec3>): Mat4 | null {
     let x = axis[0];
     let y = axis[1];
     let z = axis[2];
@@ -1272,7 +1274,7 @@ export function fromZRotation(out: Mat4, rad: number): Mat4 {
  * @param v Translation vector
  * @returns out
  */
-export function fromRotationTranslation(out: Mat4, q: Quat | Quat2, v: Vec3): Mat4 {
+export function fromRotationTranslation(out: Mat4, q: Const<Quat> | Const<Quat2>, v: Const<Vec3>): Mat4 {
     // Quaternion math
     const x = q[0];
     const y = q[1];
@@ -1319,7 +1321,7 @@ export function fromRotationTranslation(out: Mat4, q: Quat | Quat2, v: Vec3): Ma
  * @param a Dual Quaternion
  * @returns mat4 receiving operation result
  */
-export function fromQuat2(out: Mat4, a: Quat2): Mat4 {
+export function fromQuat2(out: Mat4, a: Const<Quat2>): Mat4 {
     const translation = [0, 0, 0] as Vec3;
     const bx = -a[0];
     const by = -a[1];
@@ -1354,7 +1356,7 @@ export function fromQuat2(out: Mat4, a: Quat2): Mat4 {
  * @param mat Matrix to be decomposed (input)
  * @return out
  */
-export function getTranslation(out: Vec3, mat: Mat4): Vec3 {
+export function getTranslation(out: Vec3, mat: Const<Mat4>): Vec3 {
     out[0] = mat[12];
     out[1] = mat[13];
     out[2] = mat[14];
@@ -1372,7 +1374,7 @@ export function getTranslation(out: Vec3, mat: Mat4): Vec3 {
  * @param mat Matrix to be decomposed (input)
  * @return out
  */
-export function getScaling(out: Vec3, mat: Mat4): Vec3 {
+export function getScaling(out: Vec3, mat: Const<Mat4>): Vec3 {
     const m11 = mat[0];
     const m12 = mat[1];
     const m13 = mat[2];
@@ -1399,7 +1401,7 @@ export function getScaling(out: Vec3, mat: Mat4): Vec3 {
  * @param mat Matrix to be decomposed (input)
  * @return out
  */
-export function getRotation(out: Quat, mat: Mat4): Quat {
+export function getRotation(out: Quat, mat: Const<Mat4>): Quat {
     const scaling = [0, 0, 0] as Vec3;
     getScaling(scaling, mat);
 
@@ -1458,7 +1460,7 @@ export function getRotation(out: Quat, mat: Mat4): Quat {
  * @param mat Matrix to be decomposed (input)
  * @returns out_r
  */
-export function decompose(out_r: Quat, out_t: Vec3, out_s: Vec3, mat: Mat4): Quat {
+export function decompose(out_r: Quat, out_t: Vec3, out_s: Vec3, mat: Const<Mat4>): Quat {
     out_t[0] = mat[12];
     out_t[1] = mat[13];
     out_t[2] = mat[14];
@@ -1540,7 +1542,7 @@ export function decompose(out_r: Quat, out_t: Vec3, out_s: Vec3, mat: Mat4): Qua
  * @param s Scaling vector
  * @returns out
  */
-export function fromRotationTranslationScale(out: Mat4, q: Quat, v: Vec3, s: Vec3): Mat4 {
+export function fromRotationTranslationScale(out: Mat4, q: Const<Quat>, v: Const<Vec3>, s: Const<Vec3>): Mat4 {
     // Quaternion math
     const x = q[0];
     const y = q[1];
@@ -1603,7 +1605,7 @@ export function fromRotationTranslationScale(out: Mat4, q: Quat, v: Vec3, s: Vec
  * @param o The origin vector around which to scale and rotate
  * @returns out
  */
-export function fromRotationTranslationScaleOrigin(out: Mat4, q: Quat, v: Vec3, s: Vec3, o: Vec3): Mat4 {
+export function fromRotationTranslationScaleOrigin(out: Mat4, q: Const<Quat>, v: Const<Vec3>, s: Const<Vec3>, o: Const<Vec3>): Mat4 {
     // Quaternion math
     const x = q[0];
     const y = q[1];
@@ -1669,7 +1671,7 @@ export function fromRotationTranslationScaleOrigin(out: Mat4, q: Quat, v: Vec3, 
  *
  * @returns out
  */
-export function fromQuat(out: Mat4, q: Quat): Mat4 {
+export function fromQuat(out: Mat4, q: Const<Quat>): Mat4 {
     const x = q[0];
     const y = q[1];
     const z = q[2];
@@ -2040,7 +2042,7 @@ export function orthoZO(out: Mat4, left: number, right: number, bottom: number, 
  * @param up vec3 pointing up
  * @returns out
  */
-export function lookAt(out: Mat4, eye: Vec3, center: Vec3, up: Vec3): Mat4 {
+export function lookAt(out: Mat4, eye: Const<Vec3>, center: Const<Vec3>, up: Const<Vec3>): Mat4 {
     let x0: number;
     let x1: number;
     let x2: number;
@@ -2134,7 +2136,7 @@ export function lookAt(out: Mat4, eye: Vec3, center: Vec3, up: Vec3): Mat4 {
  * @param up vec3 pointing up
  * @returns out
  */
-export function targetTo(out: Mat4, eye: Vec3, target: Vec3, up: Vec3): Mat4 {
+export function targetTo(out: Mat4, eye: Const<Vec3>, target: Const<Vec3>, up: Const<Vec3>): Mat4 {
     const eyex = eye[0];
     const eyey = eye[1];
     const eyez = eye[2];
@@ -2191,7 +2193,7 @@ export function targetTo(out: Mat4, eye: Vec3, target: Vec3, up: Vec3): Mat4 {
  * @param a matrix to represent as a string
  * @returns {String} string representation of the matrix
  */
-export function str(a: Mat4): string {
+export function str(a: Const<Mat4>): string {
     return `mat4(${a[0]}, ${a[1]}, ${a[2]}, ${a[3]}, ${a[4]}, ${a[5]}, ${a[6]}, ${a[7]}, ${a[8]}, ${a[9]}, ${a[10]}, ${a[11]}, ${a[12]}, ${a[13]}, ${a[14]}, ${a[15]})`;
 }
 
@@ -2201,7 +2203,7 @@ export function str(a: Mat4): string {
  * @param a the matrix to calculate Frobenius norm of
  * @returns Frobenius norm
  */
-export function frob(a: Mat4): number {
+export function frob(a: Const<Mat4>): number {
     return Math.sqrt(
         a[0] * a[0] +
             a[1] * a[1] +
@@ -2230,7 +2232,7 @@ export function frob(a: Mat4): number {
  * @param b the second operand
  * @returns out
  */
-export function add(out: Mat4, a: Mat4, b: Mat4): Mat4 {
+export function add(out: Mat4, a: Const<Mat4>, b: Const<Mat4>): Mat4 {
     out[0] = a[0] + b[0];
     out[1] = a[1] + b[1];
     out[2] = a[2] + b[2];
@@ -2258,7 +2260,7 @@ export function add(out: Mat4, a: Mat4, b: Mat4): Mat4 {
  * @param b the second operand
  * @returns out
  */
-export function subtract(out: Mat4, a: Mat4, b: Mat4): Mat4 {
+export function subtract(out: Mat4, a: Const<Mat4>, b: Const<Mat4>): Mat4 {
     out[0] = a[0] - b[0];
     out[1] = a[1] - b[1];
     out[2] = a[2] - b[2];
@@ -2286,7 +2288,7 @@ export function subtract(out: Mat4, a: Mat4, b: Mat4): Mat4 {
  * @param b amount to scale the matrix's elements by
  * @returns out
  */
-export function multiplyScalar(out: Mat4, a: Mat4, b: number): Mat4 {
+export function multiplyScalar(out: Mat4, a: Const<Mat4>, b: number): Mat4 {
     out[0] = a[0] * b;
     out[1] = a[1] * b;
     out[2] = a[2] * b;
@@ -2315,7 +2317,7 @@ export function multiplyScalar(out: Mat4, a: Mat4, b: number): Mat4 {
  * @param scale the amount to scale b's elements by before adding
  * @returns out
  */
-export function multiplyScalarAndAdd(out: Mat4, a: Mat4, b: Mat4, scale: number): Mat4 {
+export function multiplyScalarAndAdd(out: Mat4, a: Const<Mat4>, b: Const<Mat4>, scale: number): Mat4 {
     out[0] = a[0] + b[0] * scale;
     out[1] = a[1] + b[1] * scale;
     out[2] = a[2] + b[2] * scale;
@@ -2342,7 +2344,7 @@ export function multiplyScalarAndAdd(out: Mat4, a: Mat4, b: Mat4, scale: number)
  * @param b The second matrix.
  * @returns {Boolean} True if the matrices are equal, false otherwise.
  */
-export function exactEquals(a: Mat4, b: Mat4): boolean {
+export function exactEquals(a: Const<Mat4>, b: Const<Mat4>): boolean {
     return (
         a[0] === b[0] &&
         a[1] === b[1] &&
@@ -2370,7 +2372,7 @@ export function exactEquals(a: Mat4, b: Mat4): boolean {
  * @param b The second matrix.
  * @returns {Boolean} True if the matrices are equal, false otherwise.
  */
-export function equals(a: Mat4, b: Mat4): boolean {
+export function equals(a: Const<Mat4>, b: Const<Mat4>): boolean {
     const a0 = a[0];
     const a1 = a[1];
     const a2 = a[2];

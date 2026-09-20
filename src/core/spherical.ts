@@ -1,3 +1,4 @@
+import type { Const } from './const';
 import { wrapAngle } from './angle';
 import * as scalar from './scalar';
 import type { Vec2 } from './vec2';
@@ -10,6 +11,7 @@ import type { Vec3 } from './vec3';
  *  phi   - polar angle from the +Y axis (radians, range [0, π])
  */
 export type Spherical = [r: number, theta: number, phi: number];
+
 
 /**
  * Creates a new spherical coordinate at r=1, theta=0, phi=0
@@ -38,7 +40,7 @@ export function fromValues(r: number, theta: number, phi: number): Spherical {
  * @param a the source Spherical
  * @returns a new Spherical
  */
-export function clone(a: Spherical): Spherical {
+export function clone(a: Const<Spherical>): Spherical {
     return [a[0], a[1], a[2]];
 }
 
@@ -49,7 +51,7 @@ export function clone(a: Spherical): Spherical {
  * @param a the source Spherical
  * @returns out
  */
-export function copy(out: Spherical, a: Spherical): Spherical {
+export function copy(out: Spherical, a: Const<Spherical>): Spherical {
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -79,7 +81,7 @@ export function set(out: Spherical, r: number, theta: number, phi: number): Sphe
  * @param a the source Spherical
  * @returns out
  */
-export function normalize(out: Spherical, a: Spherical): Spherical {
+export function normalize(out: Spherical, a: Const<Spherical>): Spherical {
     out[0] = 1;
     out[1] = a[1];
     out[2] = a[2];
@@ -94,7 +96,7 @@ export function normalize(out: Spherical, a: Spherical): Spherical {
  * @param s scalar to multiply r by
  * @returns out
  */
-export function scale(out: Spherical, a: Spherical, s: number): Spherical {
+export function scale(out: Spherical, a: Const<Spherical>, s: number): Spherical {
     out[0] = a[0] * s;
     out[1] = a[1];
     out[2] = a[2];
@@ -111,7 +113,7 @@ export function scale(out: Spherical, a: Spherical, s: number): Spherical {
  * @param t interpolation factor in [0, 1]
  * @returns out
  */
-export function lerp(out: Spherical, a: Spherical, b: Spherical, t: number): Spherical {
+export function lerp(out: Spherical, a: Const<Spherical>, b: Const<Spherical>, t: number): Spherical {
     out[0] = scalar.lerp(a[0], b[0], t);
     out[1] = a[1] + wrapAngle(b[1] - a[1]) * t;
     out[2] = a[2] + wrapAngle(b[2] - a[2]) * t;
@@ -128,7 +130,7 @@ export function lerp(out: Spherical, a: Spherical, b: Spherical, t: number): Sph
  * @param v the source Vec3
  * @returns out
  */
-export function setFromVec3(out: Spherical, v: Vec3): Spherical {
+export function setFromVec3(out: Spherical, v: Const<Vec3>): Spherical {
     const x = v[0];
     const y = v[1];
     const z = v[2];
@@ -151,7 +153,7 @@ export const fromVec3 = setFromVec3;
  * @param a the source Spherical
  * @returns out
  */
-export function makeSafe(out: Spherical, a: Spherical): Spherical {
+export function makeSafe(out: Spherical, a: Const<Spherical>): Spherical {
     const EPS = scalar.EPSILON;
     out[0] = a[0];
     out[1] = a[1];
@@ -169,7 +171,7 @@ export function makeSafe(out: Spherical, a: Spherical): Spherical {
  * @param a the source Spherical
  * @returns out
  */
-export function toVec3(out: Vec3, a: Spherical): Vec3 {
+export function toVec3(out: Vec3, a: Const<Spherical>): Vec3 {
     const r = a[0];
     const theta = a[1];
     const phi = a[2];
@@ -188,7 +190,7 @@ export function toVec3(out: Vec3, a: Spherical): Vec3 {
  * @param v the source Vec2 interpreted as (x, z)
  * @returns out
  */
-export function fromVec2(out: Spherical, v: Vec2): Spherical {
+export function fromVec2(out: Spherical, v: Const<Vec2>): Spherical {
     const x = v[0];
     const z = v[1];
     const r = Math.sqrt(x * x + z * z);
@@ -206,7 +208,7 @@ export function fromVec2(out: Spherical, v: Vec2): Spherical {
  * @param a the source Spherical
  * @returns out
  */
-export function toVec2(out: Vec2, a: Spherical): Vec2 {
+export function toVec2(out: Vec2, a: Const<Spherical>): Vec2 {
     const r = a[0];
     const theta = a[1];
     const phi = a[2];
@@ -224,7 +226,7 @@ export function toVec2(out: Vec2, a: Spherical): Vec2 {
  * @param b the second Spherical
  * @returns true if approximately equal
  */
-export function equals(a: Spherical, b: Spherical): boolean {
+export function equals(a: Const<Spherical>, b: Const<Spherical>): boolean {
     return scalar.equals(a[0], b[0]) && scalar.equals(a[1], b[1]) && scalar.equals(a[2], b[2]);
 }
 
@@ -235,7 +237,7 @@ export function equals(a: Spherical, b: Spherical): boolean {
  * @param b the second Spherical
  * @returns true if exactly equal
  */
-export function exactEquals(a: Spherical, b: Spherical): boolean {
+export function exactEquals(a: Const<Spherical>, b: Const<Spherical>): boolean {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
 }
 
@@ -245,7 +247,7 @@ export function exactEquals(a: Spherical, b: Spherical): boolean {
  * @param a the source Spherical
  * @returns string representation
  */
-export function str(a: Spherical): string {
+export function str(a: Const<Spherical>): string {
     return `Spherical(${a[0]}, ${a[1]}, ${a[2]})`;
 }
 
@@ -260,7 +262,7 @@ export function str(a: Spherical): string {
  * @param b the second Spherical
  * @returns angle in radians in [0, π]
  */
-export function angleTo(a: Spherical, b: Spherical): number {
+export function angleTo(a: Const<Spherical>, b: Const<Spherical>): number {
     const phiA = a[2];
     const phiB = b[2];
     const dTheta = b[1] - a[1];

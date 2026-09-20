@@ -1,3 +1,4 @@
+import type { Const } from './const';
 import type { MutableArrayLike } from './arrays';
 import type { Mat2 } from './mat2';
 import type { Mat2d } from './mat2d';
@@ -8,6 +9,7 @@ import type { Vec3 } from './vec3';
 
 /** A 2D vector */
 export type Vec2 = [x: number, y: number];
+
 
 /**
  * Creates a new, empty vec2
@@ -24,7 +26,7 @@ export function create(): Vec2 {
  * @param a vector to clone
  * @returns a new 2D vector
  */
-export function clone(a: Vec2): Vec2 {
+export function clone(a: Const<Vec2>): Vec2 {
     return [a[0], a[1]];
 }
 
@@ -46,7 +48,7 @@ export function fromValues(x: number, y: number): Vec2 {
  * @param a the source vector
  * @returns out
  */
-export function copy(out: Vec2, a: Vec2): Vec2 {
+export function copy(out: Vec2, a: Const<Vec2>): Vec2 {
     out[0] = a[0];
     out[1] = a[1];
     return out;
@@ -86,7 +88,7 @@ export function fromBuffer(out: Vec2, buffer: ArrayLike<number>, startIndex: num
  * @param startIndex The starting index in the buffer
  * @returns The output buffer
  */
-export function toBuffer(outBuffer: MutableArrayLike<number>, vec: Vec2, startIndex: number): MutableArrayLike<number> {
+export function toBuffer(outBuffer: MutableArrayLike<number>, vec: Const<Vec2>, startIndex: number): MutableArrayLike<number> {
     outBuffer[startIndex] = vec[0];
     outBuffer[startIndex + 1] = vec[1];
     return outBuffer;
@@ -100,7 +102,7 @@ export function toBuffer(outBuffer: MutableArrayLike<number>, vec: Vec2, startIn
  * @param b the second operand
  * @returns out
  */
-export function add(out: Vec2, a: Vec2, b: Vec2): Vec2 {
+export function add(out: Vec2, a: Const<Vec2>, b: Const<Vec2>): Vec2 {
     out[0] = a[0] + b[0];
     out[1] = a[1] + b[1];
     return out;
@@ -114,7 +116,7 @@ export function add(out: Vec2, a: Vec2, b: Vec2): Vec2 {
  * @param b the scalar value to add
  * @returns out
  */
-export function addScalar(out: Vec2, a: Vec2, b: number): Vec2 {
+export function addScalar(out: Vec2, a: Const<Vec2>, b: number): Vec2 {
     out[0] = a[0] + b;
     out[1] = a[1] + b;
     return out;
@@ -128,7 +130,7 @@ export function addScalar(out: Vec2, a: Vec2, b: number): Vec2 {
  * @param b the second operand
  * @returns out
  */
-export function subtract(out: Vec2, a: Vec2, b: Vec2): Vec2 {
+export function subtract(out: Vec2, a: Const<Vec2>, b: Const<Vec2>): Vec2 {
     out[0] = a[0] - b[0];
     out[1] = a[1] - b[1];
     return out;
@@ -142,7 +144,7 @@ export function subtract(out: Vec2, a: Vec2, b: Vec2): Vec2 {
  * @param b the scalar value to subtract
  * @returns out
  */
-export function subtractScalar(out: Vec2, a: Vec2, b: number): Vec2 {
+export function subtractScalar(out: Vec2, a: Const<Vec2>, b: number): Vec2 {
     out[0] = a[0] - b;
     out[1] = a[1] - b;
     return out;
@@ -156,7 +158,7 @@ export function subtractScalar(out: Vec2, a: Vec2, b: number): Vec2 {
  * @param b the second operand
  * @returns out
  */
-export function multiply(out: Vec2, a: Vec2, b: Vec2): Vec2 {
+export function multiply(out: Vec2, a: Const<Vec2>, b: Const<Vec2>): Vec2 {
     out[0] = a[0] * b[0];
     out[1] = a[1] * b[1];
     return out;
@@ -170,7 +172,7 @@ export function multiply(out: Vec2, a: Vec2, b: Vec2): Vec2 {
  * @param b the second operand
  * @returns out
  */
-export function divide(out: Vec2, a: Vec2, b: Vec2): Vec2 {
+export function divide(out: Vec2, a: Const<Vec2>, b: Const<Vec2>): Vec2 {
     out[0] = a[0] / b[0];
     out[1] = a[1] / b[1];
     return out;
@@ -183,7 +185,7 @@ export function divide(out: Vec2, a: Vec2, b: Vec2): Vec2 {
  * @param a vector to ceil
  * @returns out
  */
-export function ceil(out: Vec2, a: Vec2): Vec2 {
+export function ceil(out: Vec2, a: Const<Vec2>): Vec2 {
     out[0] = Math.ceil(a[0]);
     out[1] = Math.ceil(a[1]);
     return out;
@@ -196,7 +198,7 @@ export function ceil(out: Vec2, a: Vec2): Vec2 {
  * @param a vector to floor
  * @returns out
  */
-export function floor(out: Vec2, a: Vec2): Vec2 {
+export function floor(out: Vec2, a: Const<Vec2>): Vec2 {
     out[0] = Math.floor(a[0]);
     out[1] = Math.floor(a[1]);
     return out;
@@ -210,7 +212,7 @@ export function floor(out: Vec2, a: Vec2): Vec2 {
  * @param b the second operand
  * @returns out
  */
-export function min(out: Vec2, a: Vec2, b: Vec2): Vec2 {
+export function min(out: Vec2, a: Const<Vec2>, b: Const<Vec2>): Vec2 {
     out[0] = Math.min(a[0], b[0]);
     out[1] = Math.min(a[1], b[1]);
     return out;
@@ -224,7 +226,7 @@ export function min(out: Vec2, a: Vec2, b: Vec2): Vec2 {
  * @param b the second operand
  * @returns out
  */
-export function max(out: Vec2, a: Vec2, b: Vec2): Vec2 {
+export function max(out: Vec2, a: Const<Vec2>, b: Const<Vec2>): Vec2 {
     out[0] = Math.max(a[0], b[0]);
     out[1] = Math.max(a[1], b[1]);
     return out;
@@ -237,7 +239,7 @@ export function max(out: Vec2, a: Vec2, b: Vec2): Vec2 {
  * @param a vector to round
  * @returns out
  */
-export function round(out: Vec2, a: Vec2): Vec2 {
+export function round(out: Vec2, a: Const<Vec2>): Vec2 {
     out[0] = scalar.round(a[0]);
     out[1] = scalar.round(a[1]);
     return out;
@@ -251,7 +253,7 @@ export function round(out: Vec2, a: Vec2): Vec2 {
  * @param b amount to scale the vector by
  * @returns out
  */
-export function scale(out: Vec2, a: Vec2, b: number): Vec2 {
+export function scale(out: Vec2, a: Const<Vec2>, b: number): Vec2 {
     out[0] = a[0] * b;
     out[1] = a[1] * b;
     return out;
@@ -266,7 +268,7 @@ export function scale(out: Vec2, a: Vec2, b: number): Vec2 {
  * @param scale the amount to scale b by before adding
  * @returns out
  */
-export function scaleAndAdd(out: Vec2, a: Vec2, b: Vec2, scale: number): Vec2 {
+export function scaleAndAdd(out: Vec2, a: Const<Vec2>, b: Const<Vec2>, scale: number): Vec2 {
     out[0] = a[0] + b[0] * scale;
     out[1] = a[1] + b[1] * scale;
     return out;
@@ -279,7 +281,7 @@ export function scaleAndAdd(out: Vec2, a: Vec2, b: Vec2, scale: number): Vec2 {
  * @param b the second operand
  * @returns distance between a and b
  */
-export function distance(a: Vec2, b: Vec2): number {
+export function distance(a: Const<Vec2>, b: Const<Vec2>): number {
     const x = b[0] - a[0];
     const y = b[1] - a[1];
     return Math.sqrt(x * x + y * y);
@@ -292,7 +294,7 @@ export function distance(a: Vec2, b: Vec2): number {
  * @param b the second operand
  * @returns squared distance between a and b
  */
-export function squaredDistance(a: Vec2, b: Vec2): number {
+export function squaredDistance(a: Const<Vec2>, b: Const<Vec2>): number {
     const x = b[0] - a[0];
     const y = b[1] - a[1];
     return x * x + y * y;
@@ -304,7 +306,7 @@ export function squaredDistance(a: Vec2, b: Vec2): number {
  * @param a vector to calculate length of
  * @returns length of a
  */
-export function length(a: Vec2): number {
+export function length(a: Const<Vec2>): number {
     const x = a[0];
     const y = a[1];
     return Math.sqrt(x * x + y * y);
@@ -316,7 +318,7 @@ export function length(a: Vec2): number {
  * @param a vector to calculate squared length of
  * @returns squared length of a
  */
-export function squaredLength(a: Vec2): number {
+export function squaredLength(a: Const<Vec2>): number {
     const x = a[0];
     const y = a[1];
     return x * x + y * y;
@@ -329,7 +331,7 @@ export function squaredLength(a: Vec2): number {
  * @param a vector to negate
  * @returns out
  */
-export function negate(out: Vec2, a: Vec2): Vec2 {
+export function negate(out: Vec2, a: Const<Vec2>): Vec2 {
     out[0] = -a[0];
     out[1] = -a[1];
     return out;
@@ -342,7 +344,7 @@ export function negate(out: Vec2, a: Vec2): Vec2 {
  * @param a vector to invert
  * @returns out
  */
-export function inverse(out: Vec2, a: Vec2): Vec2 {
+export function inverse(out: Vec2, a: Const<Vec2>): Vec2 {
     out[0] = 1.0 / a[0];
     out[1] = 1.0 / a[1];
     return out;
@@ -355,7 +357,7 @@ export function inverse(out: Vec2, a: Vec2): Vec2 {
  * @param a vector to normalize
  * @returns out
  */
-export function normalize(out: Vec2, a: Vec2): Vec2 {
+export function normalize(out: Vec2, a: Const<Vec2>): Vec2 {
     const x = a[0];
     const y = a[1];
     let len = x * x + y * y;
@@ -374,7 +376,7 @@ export function normalize(out: Vec2, a: Vec2): Vec2 {
  * @param b the second operand
  * @returns dot product of a and b
  */
-export function dot(a: Vec2, b: Vec2): number {
+export function dot(a: Const<Vec2>, b: Const<Vec2>): number {
     return a[0] * b[0] + a[1] * b[1];
 }
 
@@ -387,7 +389,7 @@ export function dot(a: Vec2, b: Vec2): number {
  * @param b the second operand
  * @returns out
  */
-export function cross(out: Vec3, a: Vec2, b: Vec2): Vec3 {
+export function cross(out: Vec3, a: Const<Vec2>, b: Const<Vec2>): Vec3 {
     const z = a[0] * b[1] - a[1] * b[0];
     out[0] = out[1] = 0;
     out[2] = z;
@@ -403,7 +405,7 @@ export function cross(out: Vec3, a: Vec2, b: Vec2): Vec3 {
  * @param t interpolation amount, in the range [0-1], between the two inputs
  * @returns out
  */
-export function lerp(out: Vec2, a: Vec2, b: Vec2, t: number): Vec2 {
+export function lerp(out: Vec2, a: Const<Vec2>, b: Const<Vec2>, t: number): Vec2 {
     const ax = a[0];
     const ay = a[1];
     out[0] = ax + t * (b[0] - ax);
@@ -422,7 +424,7 @@ export function lerp(out: Vec2, a: Vec2, b: Vec2, t: number): Vec2 {
  * @param t interpolation amount
  * @returns out
  */
-export function lagrange(out: Vec2, a: Vec2, b: Vec2, c: Vec2, t: number): Vec2 {
+export function lagrange(out: Vec2, a: Const<Vec2>, b: Const<Vec2>, c: Const<Vec2>, t: number): Vec2 {
     const c0 = 2 * (t - 1) * (t - 0.5);
     const c1 = -4 * (t - 1) * t;
     const c2 = 2 * (t - 0.5) * t;
@@ -439,7 +441,7 @@ export function lagrange(out: Vec2, a: Vec2, b: Vec2, c: Vec2, t: number): Vec2 
  * @param m matrix to transform with
  * @returns out
  */
-export function transformMat2(out: Vec2, a: Vec2, m: Mat2): Vec2 {
+export function transformMat2(out: Vec2, a: Const<Vec2>, m: Const<Mat2>): Vec2 {
     const x = a[0];
     const y = a[1];
     out[0] = m[0] * x + m[2] * y;
@@ -455,7 +457,7 @@ export function transformMat2(out: Vec2, a: Vec2, m: Mat2): Vec2 {
  * @param m matrix to transform with
  * @returns out
  */
-export function transformMat2d(out: Vec2, a: Vec2, m: Mat2d): Vec2 {
+export function transformMat2d(out: Vec2, a: Const<Vec2>, m: Const<Mat2d>): Vec2 {
     const x = a[0];
     const y = a[1];
     out[0] = m[0] * x + m[2] * y + m[4];
@@ -472,7 +474,7 @@ export function transformMat2d(out: Vec2, a: Vec2, m: Mat2d): Vec2 {
  * @param m matrix to transform with
  * @returns out
  */
-export function transformMat3(out: Vec2, a: Vec2, m: Mat3): Vec2 {
+export function transformMat3(out: Vec2, a: Const<Vec2>, m: Const<Mat3>): Vec2 {
     const x = a[0];
     const y = a[1];
     out[0] = m[0] * x + m[3] * y + m[6];
@@ -490,7 +492,7 @@ export function transformMat3(out: Vec2, a: Vec2, m: Mat3): Vec2 {
  * @param m matrix to transform with
  * @returns out
  */
-export function transformMat4(out: Vec2, a: Vec2, m: Mat4): Vec2 {
+export function transformMat4(out: Vec2, a: Const<Vec2>, m: Const<Mat4>): Vec2 {
     const x = a[0];
     const y = a[1];
     out[0] = m[0] * x + m[4] * y + m[12];
@@ -506,7 +508,7 @@ export function transformMat4(out: Vec2, a: Vec2, m: Mat4): Vec2 {
  * @param rad The angle of rotation in radians
  * @returns out
  */
-export function rotate(out: Vec2, a: Vec2, b: Vec2, rad: number): Vec2 {
+export function rotate(out: Vec2, a: Const<Vec2>, b: Const<Vec2>, rad: number): Vec2 {
     //Translate point to the origin
     const p0 = a[0] - b[0];
     const p1 = a[1] - b[1];
@@ -526,7 +528,7 @@ export function rotate(out: Vec2, a: Vec2, b: Vec2, rad: number): Vec2 {
  * @param b The second operand
  * @returns The angle in radians
  */
-export function angle(a: Vec2, b: Vec2): number {
+export function angle(a: Const<Vec2>, b: Const<Vec2>): number {
     const x1 = a[0];
     const y1 = a[1];
     const x2 = b[0];
@@ -551,7 +553,7 @@ export function angle(a: Vec2, b: Vec2): number {
  * @param b the second operand
  * @returns the signed angle in radians
  */
-export function signedAngle(a: Vec2, b: Vec2): number {
+export function signedAngle(a: Const<Vec2>, b: Const<Vec2>): number {
     const ax = a[0];
     const ay = a[1];
     const bx = b[0];
@@ -579,7 +581,7 @@ export function zero(out: Vec2): Vec2 {
  * @param a vector to represent as a string
  * @returns string representation of the vector
  */
-export function str(a: Vec2): string {
+export function str(a: Const<Vec2>): string {
     return `vec2(${a[0]}, ${a[1]})`;
 }
 
@@ -590,7 +592,7 @@ export function str(a: Vec2): string {
  * @param b The second vector.
  * @returns True if the vectors are equal, false otherwise.
  */
-export function exactEquals(a: Vec2, b: Vec2): boolean {
+export function exactEquals(a: Const<Vec2>, b: Const<Vec2>): boolean {
     return a[0] === b[0] && a[1] === b[1];
 }
 
@@ -601,7 +603,7 @@ export function exactEquals(a: Vec2, b: Vec2): boolean {
  * @param b The second vector.
  * @returns True if the vectors are equal, false otherwise.
  */
-export function equals(a: Vec2, b: Vec2): boolean {
+export function equals(a: Const<Vec2>, b: Const<Vec2>): boolean {
     const a0 = a[0];
     const a1 = a[1];
     const b0 = b[0];
@@ -617,7 +619,7 @@ export function equals(a: Vec2, b: Vec2): boolean {
  * @param a vector to test
  * @returns whether or not the vector is finite
  */
-export function finite(a: Vec2): boolean {
+export function finite(a: Const<Vec2>): boolean {
     return Number.isFinite(a[0]) && Number.isFinite(a[1]);
 }
 

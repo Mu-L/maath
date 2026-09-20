@@ -1,3 +1,4 @@
+import type { Const } from './const';
 import * as scalar from './scalar';
 import { wrapAngle } from './angle';
 import type { Vec2 } from './vec2';
@@ -13,6 +14,7 @@ import type { Vec2 } from './vec2';
  * horizontal projection use spherical.fromVec2 / spherical.toVec2 instead.
  */
 export type Polar = [r: number, theta: number];
+
 
 /**
  * Creates a new polar coordinate at r=1, theta=0
@@ -40,7 +42,7 @@ export function fromValues(r: number, theta: number): Polar {
  * @param a the source Polar
  * @returns a new Polar
  */
-export function clone(a: Polar): Polar {
+export function clone(a: Const<Polar>): Polar {
     return [a[0], a[1]];
 }
 
@@ -51,7 +53,7 @@ export function clone(a: Polar): Polar {
  * @param a the source Polar
  * @returns out
  */
-export function copy(out: Polar, a: Polar): Polar {
+export function copy(out: Polar, a: Const<Polar>): Polar {
     out[0] = a[0];
     out[1] = a[1];
     return out;
@@ -78,7 +80,7 @@ export function set(out: Polar, r: number, theta: number): Polar {
  * @param a the source Polar
  * @returns out
  */
-export function normalize(out: Polar, a: Polar): Polar {
+export function normalize(out: Polar, a: Const<Polar>): Polar {
     out[0] = 1;
     out[1] = a[1];
     return out;
@@ -92,7 +94,7 @@ export function normalize(out: Polar, a: Polar): Polar {
  * @param s scalar to multiply r by
  * @returns out
  */
-export function scale(out: Polar, a: Polar, s: number): Polar {
+export function scale(out: Polar, a: Const<Polar>, s: number): Polar {
     out[0] = a[0] * s;
     out[1] = a[1];
     return out;
@@ -106,7 +108,7 @@ export function scale(out: Polar, a: Polar, s: number): Polar {
  * @param rad the angle to add to theta
  * @returns out
  */
-export function rotate(out: Polar, a: Polar, rad: number): Polar {
+export function rotate(out: Polar, a: Const<Polar>, rad: number): Polar {
     out[0] = a[0];
     out[1] = wrapAngle(a[1] + rad);
     return out;
@@ -122,7 +124,7 @@ export function rotate(out: Polar, a: Polar, rad: number): Polar {
  * @param t interpolation factor in [0, 1]
  * @returns out
  */
-export function lerp(out: Polar, a: Polar, b: Polar, t: number): Polar {
+export function lerp(out: Polar, a: Const<Polar>, b: Const<Polar>, t: number): Polar {
     out[0] = scalar.lerp(a[0], b[0], t);
     out[1] = a[1] + wrapAngle(b[1] - a[1]) * t;
     return out;
@@ -137,7 +139,7 @@ export function lerp(out: Polar, a: Polar, b: Polar, t: number): Polar {
  * @param v the source Vec2
  * @returns out
  */
-export function setFromVec2(out: Polar, v: Vec2): Polar {
+export function setFromVec2(out: Polar, v: Const<Vec2>): Polar {
     const x = v[0];
     const y = v[1];
     out[0] = Math.sqrt(x * x + y * y);
@@ -157,7 +159,7 @@ export const fromVec2 = setFromVec2;
  * @param a the source Polar
  * @returns out
  */
-export function toVec2(out: Vec2, a: Polar): Vec2 {
+export function toVec2(out: Vec2, a: Const<Polar>): Vec2 {
     const r = a[0];
     const theta = a[1];
     out[0] = r * Math.cos(theta);
@@ -173,7 +175,7 @@ export function toVec2(out: Vec2, a: Polar): Vec2 {
  * @param b the second Polar
  * @returns angle in radians in [0, pi]
  */
-export function angleTo(a: Polar, b: Polar): number {
+export function angleTo(a: Const<Polar>, b: Const<Polar>): number {
     return Math.abs(wrapAngle(b[1] - a[1]));
 }
 
@@ -185,7 +187,7 @@ export function angleTo(a: Polar, b: Polar): number {
  * @param b the second Polar
  * @returns the Euclidean distance between the two points
  */
-export function distance(a: Polar, b: Polar): number {
+export function distance(a: Const<Polar>, b: Const<Polar>): number {
     const ra = a[0];
     const rb = b[0];
     const d = ra * ra + rb * rb - 2 * ra * rb * Math.cos(b[1] - a[1]);
@@ -200,7 +202,7 @@ export function distance(a: Polar, b: Polar): number {
  * @param b the second Polar
  * @returns true if approximately equal
  */
-export function equals(a: Polar, b: Polar): boolean {
+export function equals(a: Const<Polar>, b: Const<Polar>): boolean {
     return scalar.equals(a[0], b[0]) && scalar.equals(a[1], b[1]);
 }
 
@@ -211,7 +213,7 @@ export function equals(a: Polar, b: Polar): boolean {
  * @param b the second Polar
  * @returns true if exactly equal
  */
-export function exactEquals(a: Polar, b: Polar): boolean {
+export function exactEquals(a: Const<Polar>, b: Const<Polar>): boolean {
     return a[0] === b[0] && a[1] === b[1];
 }
 
@@ -221,6 +223,6 @@ export function exactEquals(a: Polar, b: Polar): boolean {
  * @param a the source Polar
  * @returns string representation
  */
-export function str(a: Polar): string {
+export function str(a: Const<Polar>): string {
     return `Polar(${a[0]}, ${a[1]})`;
 }

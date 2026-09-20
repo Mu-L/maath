@@ -1,3 +1,4 @@
+import type { Const } from '../core/const';
 import type { Mat3 } from '../core/mat3';
 import * as mat3 from '../core/mat3';
 import type { Mat4 } from '../core/mat4';
@@ -9,11 +10,12 @@ import type { Box3 } from './box3';
 /** An oriented bounding box in 3D space */
 export type OBB3 = { center: Vec3; halfExtents: Vec3; rotation: Mat3 };
 
+
 export function create(): OBB3 {
     return { center: [0, 0, 0], halfExtents: [1, 1, 1], rotation: mat3.create() };
 }
 
-export function clone(a: OBB3): OBB3 {
+export function clone(a: Const<OBB3>): OBB3 {
     return {
         center: [a.center[0], a.center[1], a.center[2]],
         halfExtents: [a.halfExtents[0], a.halfExtents[1], a.halfExtents[2]],
@@ -21,7 +23,7 @@ export function clone(a: OBB3): OBB3 {
     };
 }
 
-export function copy(out: OBB3, a: OBB3): OBB3 {
+export function copy(out: OBB3, a: Const<OBB3>): OBB3 {
     out.center[0] = a.center[0];
     out.center[1] = a.center[1];
     out.center[2] = a.center[2];
@@ -48,7 +50,7 @@ export function copy(out: OBB3, a: OBB3): OBB3 {
  * @param rotation the Mat3 rotation matrix
  * @returns the OBB with the given center, half extents, and rotation
  */
-export function set(out: OBB3, center: Vec3, halfExtents: Vec3, rotation: Mat3): OBB3 {
+export function set(out: OBB3, center: Const<Vec3>, halfExtents: Const<Vec3>, rotation: Const<Mat3>): OBB3 {
     out.center[0] = center[0];
     out.center[1] = center[1];
     out.center[2] = center[2];
@@ -77,7 +79,7 @@ export function set(out: OBB3, center: Vec3, halfExtents: Vec3, rotation: Mat3):
  * @param q - The quaternion representing the OBB's orientation
  * @returns out
  */
-export function setFromCenterHalfExtentsQuaternion(out: OBB3, center: Vec3, halfExtents: Vec3, q: Quat): OBB3 {
+export function setFromCenterHalfExtentsQuaternion(out: OBB3, center: Const<Vec3>, halfExtents: Const<Vec3>, q: Const<Quat>): OBB3 {
     out.center[0] = center[0];
     out.center[1] = center[1];
     out.center[2] = center[2];
@@ -97,7 +99,7 @@ export function setFromCenterHalfExtentsQuaternion(out: OBB3, center: Vec3, half
  * @param aabb - The AABB (min and max corners)
  * @returns out
  */
-export function setFromBox3(out: OBB3, aabb: Box3): OBB3 {
+export function setFromBox3(out: OBB3, aabb: Const<Box3>): OBB3 {
     // Center = (min + max) / 2
     out.center[0] = (aabb[0] + aabb[3]) * 0.5;
     out.center[1] = (aabb[1] + aabb[4]) * 0.5;
@@ -121,7 +123,7 @@ export function setFromBox3(out: OBB3, aabb: Box3): OBB3 {
  * @param point - The point to test
  * @returns true if the point is inside the OBB
  */
-export function containsPoint(obb: OBB3, point: Vec3): boolean {
+export function containsPoint(obb: Const<OBB3>, point: Const<Vec3>): boolean {
     // Vector from center to point
     const dx = point[0] - obb.center[0];
     const dy = point[1] - obb.center[1];
@@ -147,7 +149,7 @@ export function containsPoint(obb: OBB3, point: Vec3): boolean {
  * @param point - The point to clamp
  * @returns out
  */
-export function clampPoint(out: Vec3, obb: OBB3, point: Vec3): Vec3 {
+export function clampPoint(out: Vec3, obb: Const<OBB3>, point: Const<Vec3>): Vec3 {
     // OBB axes are the columns of the rotation matrix, read directly from r[].
     const r = obb.rotation;
 
@@ -202,7 +204,7 @@ export function clampPoint(out: Vec3, obb: OBB3, point: Vec3): Vec3 {
  * @param epsilon - Squared-sine threshold below which near-parallel edge axes are skipped
  * @returns true if the OBBs intersect
  */
-export function intersectsOBB3(a: OBB3, b: OBB3, epsilon = EPSILON): boolean {
+export function intersectsOBB3(a: Const<OBB3>, b: Const<OBB3>, epsilon = EPSILON): boolean {
     const rotA = a.rotation;
     const rotB = b.rotation;
 
@@ -368,7 +370,7 @@ export function intersectsOBB3(a: OBB3, b: OBB3, epsilon = EPSILON): boolean {
  * @param aabb - The AABB (axis-aligned bounding box)
  * @returns true if they intersect
  */
-export function intersectsBox3(obb: OBB3, aabb: Box3): boolean {
+export function intersectsBox3(obb: Const<OBB3>, aabb: Const<Box3>): boolean {
     const rotA = obb.rotation;
     const epsilon = EPSILON;
 
@@ -514,7 +516,7 @@ export function intersectsBox3(obb: OBB3, aabb: Box3): boolean {
  * @param matrix - The 4x4 transformation matrix
  * @returns out
  */
-export function applyMatrix4(out: OBB3, obb: OBB3, matrix: Mat4): OBB3 {
+export function applyMatrix4(out: OBB3, obb: Const<OBB3>, matrix: Const<Mat4>): OBB3 {
     // read the upper-left 3x3 (the affine linear part) into locals once. Columns
     // m0*, m1*, m2* correspond to mat4 columns 0, 1, 2.
     const m00 = matrix[0];
