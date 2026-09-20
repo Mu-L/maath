@@ -1,3 +1,4 @@
+import type { Const } from '../core/const';
 import type { Vec2 } from '../core/vec2';
 import type { Box2 } from './box2';
 
@@ -11,7 +12,7 @@ import type { Box2 } from './box2';
  * @param c the third vertex of the triangle.
  * @returns the signed area.
  */
-export function signedArea(a: Vec2, b: Vec2, c: Vec2): number {
+export function signedArea(a: Const<Vec2>, b: Const<Vec2>, c: Const<Vec2>): number {
     return ((b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1])) / 2;
 }
 
@@ -23,7 +24,7 @@ export function signedArea(a: Vec2, b: Vec2, c: Vec2): number {
  * @param c the third vertex of the triangle.
  * @returns the absolute area.
  */
-export function area(a: Vec2, b: Vec2, c: Vec2): number {
+export function area(a: Const<Vec2>, b: Const<Vec2>, c: Const<Vec2>): number {
     return Math.abs(signedArea(a, b, c));
 }
 
@@ -36,7 +37,7 @@ export function area(a: Vec2, b: Vec2, c: Vec2): number {
  * @param c the third vertex of the triangle.
  * @returns out.
  */
-export function centroid(out: Vec2, a: Vec2, b: Vec2, c: Vec2): Vec2 {
+export function centroid(out: Vec2, a: Const<Vec2>, b: Const<Vec2>, c: Const<Vec2>): Vec2 {
     out[0] = (a[0] + b[0] + c[0]) / 3;
     out[1] = (a[1] + b[1] + c[1]) / 3;
     return out;
@@ -51,7 +52,7 @@ export function centroid(out: Vec2, a: Vec2, b: Vec2, c: Vec2): Vec2 {
  * @param c the third vertex of the triangle.
  * @returns out.
  */
-export function bounds(out: Box2, a: Vec2, b: Vec2, c: Vec2): Box2 {
+export function bounds(out: Box2, a: Const<Vec2>, b: Const<Vec2>, c: Const<Vec2>): Box2 {
     out[0] = Math.min(a[0], b[0], c[0]);
     out[1] = Math.min(a[1], b[1], c[1]);
     out[2] = Math.max(a[0], b[0], c[0]);
@@ -69,7 +70,7 @@ export function bounds(out: Box2, a: Vec2, b: Vec2, c: Vec2): Box2 {
  * @param point the point to test.
  * @returns true if the point is inside (or on the boundary of) the triangle.
  */
-export function containsPoint(a: Vec2, b: Vec2, c: Vec2, point: Vec2): boolean {
+export function containsPoint(a: Const<Vec2>, b: Const<Vec2>, c: Const<Vec2>, point: Const<Vec2>): boolean {
     const px = point[0];
     const py = point[1];
 

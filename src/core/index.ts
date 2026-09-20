@@ -1,3 +1,4 @@
+export type { Const } from './const';
 export * from './scalar';
 export * from './angle';
 export type { MutableArrayLike } from './arrays';

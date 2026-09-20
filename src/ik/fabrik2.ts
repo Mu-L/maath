@@ -1,3 +1,4 @@
+import type { Const } from '../core/const';
 import { type Vec2, vec2 } from '../core';
 
 // FABRIK (Forward And Backward Reaching Inverse Kinematics) for 2D chains.
@@ -179,7 +180,7 @@ const DEGENERATE_SQUARED_LENGTH = 1e-24;
  * A zero axis cannot be normalized, and storing one turns every constraint that reads it into NaN.
  * `out` always starts as a valid unit vector, so keeping it is the safe fallback.
  */
-function setUnitAxis(out: Vec2, axis: Vec2): Vec2 {
+function setUnitAxis(out: Vec2, axis: Const<Vec2>): Vec2 {
     if (!hasDirection(vec2.squaredLength(axis))) return out;
     return vec2.normalize(out, axis);
 }
@@ -239,7 +240,7 @@ export function createChain2(): Chain2 {
  * @param joint the bone's joint, or a fresh unconstrained one if omitted
  * @returns the appended bone
  */
-export function addBone(chain: Chain2, start: Vec2, end: Vec2, joint: Joint2 = createJoint2()): Bone2 {
+export function addBone(chain: Chain2, start: Const<Vec2>, end: Const<Vec2>, joint: Joint2 = createJoint2()): Bone2 {
     const bone: Bone2 = {
         start: [start[0], start[1]],
         end: [end[0], end[1]],
@@ -272,7 +273,7 @@ const _addConsecutive_end: Vec2 = [0, 0];
  * @param joint the bone's joint, or a fresh unconstrained one if omitted
  * @returns the appended bone
  */
-export function addConsecutiveBone(chain: Chain2, direction: Vec2, length: number, joint: Joint2 = createJoint2()): Bone2 {
+export function addConsecutiveBone(chain: Chain2, direction: Const<Vec2>, length: number, joint: Joint2 = createJoint2()): Bone2 {
     const previous = chain.bones[chain.bones.length - 1];
 
     _addConsecutive_end[0] = previous.end[0] + direction[0] * length;
@@ -295,7 +296,7 @@ export function addConsecutiveBone(chain: Chain2, direction: Vec2, length: numbe
  * @param joint the joint for the junction this creates, or a fresh unconstrained one if omitted
  * @returns the prepended bone
  */
-export function addBoneAtBase(chain: Chain2, direction: Vec2, length: number, joint: Joint2 = createJoint2()): Bone2 {
+export function addBoneAtBase(chain: Chain2, direction: Const<Vec2>, length: number, joint: Joint2 = createJoint2()): Bone2 {
     const first = chain.bones[0];
 
     // the bone that was first now sits at index 1, so it is the one whose joint governs the new
@@ -345,7 +346,7 @@ export function setLocalJoint(joint: Joint2, clockwise: number, anticlockwise: n
  * @param anticlockwise how far it may swing anticlockwise, in radians, clamped to [0, PI]
  * @returns the joint
  */
-export function setGlobalJoint(joint: Joint2, axis: Vec2, clockwise: number, anticlockwise: number): Joint2 {
+export function setGlobalJoint(joint: Joint2, axis: Const<Vec2>, clockwise: number, anticlockwise: number): Joint2 {
     joint.coordinateSystem = ConstraintCoordinateSystem.GLOBAL;
     joint.clockwise = clampAngle(clockwise);
     joint.anticlockwise = clampAngle(anticlockwise);
@@ -366,7 +367,7 @@ export function setGlobalJoint(joint: Joint2, axis: Vec2, clockwise: number, ant
 export function setBaseboneConstraint(
     chain: Chain2,
     type: BaseboneConstraintType,
-    axis: Vec2,
+    axis: Const<Vec2>,
     clockwise: number,
     anticlockwise: number,
 ): Chain2 {
@@ -385,7 +386,7 @@ export function setBaseboneConstraint(
  *
  * The next {@link backward} or {@link solve} pulls the chain to it.
  */
-export function setBaseLocation(chain: Chain2, base: Vec2): Chain2 {
+export function setBaseLocation(chain: Chain2, base: Const<Vec2>): Chain2 {
     chain.base[0] = base[0];
     chain.base[1] = base[1];
     return chain;
@@ -397,7 +398,7 @@ export function setBaseLocation(chain: Chain2, base: Vec2): Chain2 {
  * A dead-straight chain is the worst starting pose for {@link solve} - see the note there. Bend
  * `direction` slightly between bones instead if the chain will be solved cold.
  */
-export function straighten(chain: Chain2, direction: Vec2): Chain2 {
+export function straighten(chain: Chain2, direction: Const<Vec2>): Chain2 {
     const bones = chain.bones;
 
     let x = chain.base[0];
@@ -450,7 +451,7 @@ export function getBoneAngle(chain: Chain2, index: number): number {
 }
 
 /** Whether `target` is within reach of the chain's base, so a solve can place the effector exactly on it. */
-export function isReachable(chain: Chain2, target: Vec2): boolean {
+export function isReachable(chain: Chain2, target: Const<Vec2>): boolean {
     return vec2.squaredDistance(chain.base, target) <= chain.length * chain.length;
 }
 
@@ -467,7 +468,7 @@ export function isReachable(chain: Chain2, target: Vec2): boolean {
  * @param target where the end effector should go
  * @returns the chain
  */
-export function forward(chain: Chain2, target: Vec2): Chain2 {
+export function forward(chain: Chain2, target: Const<Vec2>): Chain2 {
     const bones = chain.bones;
     const count = bones.length;
 
@@ -540,7 +541,7 @@ export function forward(chain: Chain2, target: Vec2): Chain2 {
  * @param base where the base should go, used only when `chain.fixedBase` is set
  * @returns the chain
  */
-export function backward(chain: Chain2, base: Vec2): Chain2 {
+export function backward(chain: Chain2, base: Const<Vec2>): Chain2 {
     const bones = chain.bones;
     const count = bones.length;
 
@@ -612,7 +613,7 @@ export function backward(chain: Chain2, base: Vec2): Chain2 {
  * @param target where the end effector should go
  * @returns the distance from the effector to `target` afterwards
  */
-export function iterate(chain: Chain2, target: Vec2): number {
+export function iterate(chain: Chain2, target: Const<Vec2>): number {
     if (chain.bones.length === 0) return Number.POSITIVE_INFINITY;
 
     forward(chain, target);
@@ -634,7 +635,7 @@ export function iterate(chain: Chain2, target: Vec2): number {
  * @param target where the end effector should go
  * @returns the distance from the effector to `target`, also stored as `chain.solveDistance`
  */
-export function solve(chain: Chain2, target: Vec2): number {
+export function solve(chain: Chain2, target: Const<Vec2>): number {
     const count = chain.bones.length;
 
     if (count === 0) {
@@ -727,7 +728,7 @@ export function connectChain(
  * @param structure the structure to solve, mutated in place
  * @param target the target for every chain that does not use an embedded target
  */
-export function solveStructure(structure: Structure2, target: Vec2): void {
+export function solveStructure(structure: Structure2, target: Const<Vec2>): void {
     const chains = structure.chains;
 
     for (let i = 0; i < chains.length; i++) {
@@ -783,7 +784,7 @@ function clampAngle(radians: number): number {
  * Clamps the direction `(x, y)` into the wedge reaching `clockwise` one way and `anticlockwise` the
  * other from `baseline`. Writes `_pass_direction`.
  */
-function constrainToWedge(x: number, y: number, baseline: Vec2, clockwise: number, anticlockwise: number): void {
+function constrainToWedge(x: number, y: number, baseline: Const<Vec2>, clockwise: number, anticlockwise: number): void {
     _pass_direction[0] = x;
     _pass_direction[1] = y;
 

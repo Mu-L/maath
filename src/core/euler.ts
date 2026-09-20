@@ -1,3 +1,4 @@
+import type { Const } from './const';
 import type { Mat4 } from './mat4';
 import type { Quat } from './quat';
 import * as quat from './quat';
@@ -10,6 +11,7 @@ export type EulerOrder = 'xyz' | 'xzy' | 'yxz' | 'yzx' | 'zxy' | 'zyx';
 
 /** A Euler in 3D space, with an optional order (default is 'xyz') */
 export type Euler = [x: number, y: number, z: number, order?: EulerOrder];
+
 
 /**
  * Creates a new Euler with default values (0, 0, 0, 'xyz').
@@ -71,7 +73,7 @@ export function fromDegrees(out: Euler, x: number, y: number, z: number, order: 
  * @param order The order of the Euler angles.
  * @returns The output Euler.
  */
-export function fromRotationMat4(out: Euler, rotationMatrix: Mat4, order: EulerOrder = out[3] || 'xyz'): Euler {
+export function fromRotationMat4(out: Euler, rotationMatrix: Const<Mat4>, order: EulerOrder = out[3] || 'xyz'): Euler {
     return fromRotationMatrixValues(
         out,
         rotationMatrix[0],
@@ -199,7 +201,7 @@ function fromRotationMatrixValues(
  * @param b The second euler.
  * @returns True if the euler angles are equal, false otherwise.
  */
-export function exactEquals(a: Euler, b: Euler): boolean {
+export function exactEquals(a: Const<Euler>, b: Const<Euler>): boolean {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
 }
 
@@ -210,7 +212,7 @@ export function exactEquals(a: Euler, b: Euler): boolean {
  * @param b The second euler.
  * @returns True if the euler angles are equal, false otherwise.
  */
-export function equals(a: Euler, b: Euler): boolean {
+export function equals(a: Const<Euler>, b: Const<Euler>): boolean {
     const a0 = a[0];
     const a1 = a[1];
     const a2 = a[2];
@@ -232,7 +234,7 @@ export function equals(a: Euler, b: Euler): boolean {
  * @param order The order of the Euler.
  * @returns The output Euler
  */
-export function fromQuat(out: Euler, q: Quat, order: EulerOrder): Euler {
+export function fromQuat(out: Euler, q: Const<Quat>, order: EulerOrder): Euler {
     // compute the rotation matrix elements directly from the quaternion
     const x = q[0];
     const y = q[1];
@@ -276,7 +278,7 @@ const _reorderQuaternion = /*@__PURE__*/ quat.create();
  * @param order The order of the Euler.
  * @returns The output Euler.
  */
-export function reorder(out: Euler, a: Euler, order: EulerOrder): Euler {
+export function reorder(out: Euler, a: Const<Euler>, order: EulerOrder): Euler {
     quat.fromEuler(_reorderQuaternion, a);
     fromQuat(out, _reorderQuaternion, order);
     return out;

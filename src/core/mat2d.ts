@@ -1,8 +1,10 @@
+import type { Const } from './const';
 import { EPSILON } from './scalar';
 import type { Vec2 } from './vec2';
 
 /** A 2D affine transform matrix */
 export type Mat2d = [e1: number, e2: number, e3: number, e4: number, e5: number, e6: number];
+
 
 /**
  * Creates a new identity mat2d
@@ -19,7 +21,7 @@ export function create(): Mat2d {
  * @param a matrix to clone
  * @returns a new 2x3 matrix
  */
-export function clone(a: Mat2d): Mat2d {
+export function clone(a: Const<Mat2d>): Mat2d {
     return [a[0], a[1], a[2], a[3], a[4], a[5]];
 }
 
@@ -30,7 +32,7 @@ export function clone(a: Mat2d): Mat2d {
  * @param a the source matrix
  * @returns out
  */
-export function copy(out: Mat2d, a: Mat2d): Mat2d {
+export function copy(out: Mat2d, a: Const<Mat2d>): Mat2d {
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -100,7 +102,7 @@ export function set(out: Mat2d, a: number, b: number, c: number, d: number, tx: 
  * @param a the source matrix
  * @returns out, or null if source matrix is not invertible
  */
-export function invert(out: Mat2d, a: Mat2d): Mat2d | null {
+export function invert(out: Mat2d, a: Const<Mat2d>): Mat2d | null {
     const aa = a[0];
     const ab = a[1];
     const ac = a[2];
@@ -129,7 +131,7 @@ export function invert(out: Mat2d, a: Mat2d): Mat2d | null {
  * @param a the source matrix
  * @returns determinant of a
  */
-export function determinant(a: Mat2d): number {
+export function determinant(a: Const<Mat2d>): number {
     return a[0] * a[3] - a[1] * a[2];
 }
 
@@ -141,7 +143,7 @@ export function determinant(a: Mat2d): number {
  * @param b the second operand
  * @returns out
  */
-export function multiply(out: Mat2d, a: Mat2d, b: Mat2d): Mat2d {
+export function multiply(out: Mat2d, a: Const<Mat2d>, b: Const<Mat2d>): Mat2d {
     const a0 = a[0];
     const a1 = a[1];
     const a2 = a[2];
@@ -171,7 +173,7 @@ export function multiply(out: Mat2d, a: Mat2d, b: Mat2d): Mat2d {
  * @param rad the angle to rotate the matrix by
  * @returns out
  */
-export function rotate(out: Mat2d, a: Mat2d, rad: number): Mat2d {
+export function rotate(out: Mat2d, a: Const<Mat2d>, rad: number): Mat2d {
     const a0 = a[0];
     const a1 = a[1];
     const a2 = a[2];
@@ -197,7 +199,7 @@ export function rotate(out: Mat2d, a: Mat2d, rad: number): Mat2d {
  * @param v the vec2 to scale the matrix by
  * @returns out
  **/
-export function scale(out: Mat2d, a: Mat2d, v: Vec2): Mat2d {
+export function scale(out: Mat2d, a: Const<Mat2d>, v: Const<Vec2>): Mat2d {
     const a0 = a[0];
     const a1 = a[1];
     const a2 = a[2];
@@ -223,7 +225,7 @@ export function scale(out: Mat2d, a: Mat2d, v: Vec2): Mat2d {
  * @param v the vec2 to translate the matrix by
  * @returns out
  **/
-export function translate(out: Mat2d, a: Mat2d, v: Vec2): Mat2d {
+export function translate(out: Mat2d, a: Const<Mat2d>, v: Const<Vec2>): Mat2d {
     const a0 = a[0];
     const a1 = a[1];
     const a2 = a[2];
@@ -275,7 +277,7 @@ export function fromRotation(out: Mat2d, rad: number): Mat2d {
  * @param v Scaling vector
  * @returns out
  */
-export function fromScaling(out: Mat2d, v: Vec2): Mat2d {
+export function fromScaling(out: Mat2d, v: Const<Vec2>): Mat2d {
     out[0] = v[0];
     out[1] = 0;
     out[2] = 0;
@@ -296,7 +298,7 @@ export function fromScaling(out: Mat2d, v: Vec2): Mat2d {
  * @param v Translation vector
  * @returns out
  */
-export function fromTranslation(out: Mat2d, v: Vec2): Mat2d {
+export function fromTranslation(out: Mat2d, v: Const<Vec2>): Mat2d {
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -312,7 +314,7 @@ export function fromTranslation(out: Mat2d, v: Vec2): Mat2d {
  * @param a matrix to represent as a string
  * @returns string representation of the matrix
  */
-export function str(a: Mat2d): string {
+export function str(a: Const<Mat2d>): string {
     return `mat2d(${a[0]}, ${a[1]}, ${a[2]}, ${a[3]}, ${a[4]}, ${a[5]})`;
 }
 
@@ -322,7 +324,7 @@ export function str(a: Mat2d): string {
  * @param a the matrix to calculate Frobenius norm of
  * @returns Frobenius norm
  */
-export function frob(a: Mat2d): number {
+export function frob(a: Const<Mat2d>): number {
     return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2] + a[3] * a[3] + a[4] * a[4] + a[5] * a[5] + 1);
 }
 
@@ -334,7 +336,7 @@ export function frob(a: Mat2d): number {
  * @param b the second operand
  * @returns out
  */
-export function add(out: Mat2d, a: Mat2d, b: Mat2d): Mat2d {
+export function add(out: Mat2d, a: Const<Mat2d>, b: Const<Mat2d>): Mat2d {
     out[0] = a[0] + b[0];
     out[1] = a[1] + b[1];
     out[2] = a[2] + b[2];
@@ -352,7 +354,7 @@ export function add(out: Mat2d, a: Mat2d, b: Mat2d): Mat2d {
  * @param b the second operand
  * @returns out
  */
-export function subtract(out: Mat2d, a: Mat2d, b: Mat2d): Mat2d {
+export function subtract(out: Mat2d, a: Const<Mat2d>, b: Const<Mat2d>): Mat2d {
     out[0] = a[0] - b[0];
     out[1] = a[1] - b[1];
     out[2] = a[2] - b[2];
@@ -370,7 +372,7 @@ export function subtract(out: Mat2d, a: Mat2d, b: Mat2d): Mat2d {
  * @param b amount to scale the matrix's elements by
  * @returns out
  */
-export function multiplyScalar(out: Mat2d, a: Mat2d, b: number): Mat2d {
+export function multiplyScalar(out: Mat2d, a: Const<Mat2d>, b: number): Mat2d {
     out[0] = a[0] * b;
     out[1] = a[1] * b;
     out[2] = a[2] * b;
@@ -389,7 +391,7 @@ export function multiplyScalar(out: Mat2d, a: Mat2d, b: number): Mat2d {
  * @param scale the amount to scale b's elements by before adding
  * @returns out
  */
-export function multiplyScalarAndAdd(out: Mat2d, a: Mat2d, b: Mat2d, scale: number): Mat2d {
+export function multiplyScalarAndAdd(out: Mat2d, a: Const<Mat2d>, b: Const<Mat2d>, scale: number): Mat2d {
     out[0] = a[0] + b[0] * scale;
     out[1] = a[1] + b[1] * scale;
     out[2] = a[2] + b[2] * scale;
@@ -406,7 +408,7 @@ export function multiplyScalarAndAdd(out: Mat2d, a: Mat2d, b: Mat2d, scale: numb
  * @param b The second matrix.
  * @returns True if the matrices are equal, false otherwise.
  */
-export function exactEquals(a: Mat2d, b: Mat2d): boolean {
+export function exactEquals(a: Const<Mat2d>, b: Const<Mat2d>): boolean {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5];
 }
 
@@ -417,7 +419,7 @@ export function exactEquals(a: Mat2d, b: Mat2d): boolean {
  * @param b The second matrix.
  * @returns True if the matrices are equal, false otherwise.
  */
-export function equals(a: Mat2d, b: Mat2d): boolean {
+export function equals(a: Const<Mat2d>, b: Const<Mat2d>): boolean {
     const a0 = a[0];
     const a1 = a[1];
     const a2 = a[2];
