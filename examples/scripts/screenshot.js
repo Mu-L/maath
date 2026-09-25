@@ -2,7 +2,7 @@
  * Screenshot automation for examples.
  *
  * Starts `pnpm run dev` (Vite dev server), navigates Playwright Chromium to
- * each example, waits for rendering to settle, clips to the <canvas> element,
+ * each example, hides overlays, and frames the rendered content with a little margin,
  * and writes PNGs to examples/public/screenshots/<key>.png.
  *
  * Usage:
@@ -16,6 +16,7 @@ import { spawn } from 'node:child_process';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const examplesDir = resolve(__dirname, '..');
@@ -50,8 +51,9 @@ mkdirSync(screenshotsDir, { recursive: true });
 
 function startDevServer() {
     return new Promise((resolve, reject) => {
-        const proc = spawn('pnpm', ['run', 'dev', '--', '--port', '5199', '--strictPort'], {
+        const proc = spawn('pnpm', ['exec', 'vite', '--port', '5199', '--strictPort'], {
             cwd: examplesDir,
+            env: { ...process.env, BROWSER: 'none' },
             stdio: ['ignore', 'pipe', 'pipe'],
         });
 
@@ -84,6 +86,38 @@ function startDevServer() {
 // ---------------------------------------------------------------------------
 
 let viteProc = null;
+let browser = null;
+
+/** Keep the drawing centered in a 16:9 frame with room around its outermost marks. */
+async function frameDrawing(screenshot, outPath) {
+    const { data, info } = await sharp(screenshot).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+    let left = info.width, top = info.height, right = -1, bottom = -1;
+    for (let y = 0; y < info.height; y++) {
+        for (let x = 0; x < info.width; x++) {
+            const offset = (y * info.width + x) * info.channels;
+            // The warm background is #14120e. Ignore near-background antialiasing.
+            if (Math.max(Math.abs(data[offset] - 20), Math.abs(data[offset + 1] - 18), Math.abs(data[offset + 2] - 14)) <= 8) continue;
+            left = Math.min(left, x);
+            right = Math.max(right, x);
+            top = Math.min(top, y);
+            bottom = Math.max(bottom, y);
+        }
+    }
+    if (right < left) throw new Error(`No visible drawing for ${outPath}`);
+    const units = Math.min(
+        Math.floor(info.width / 16),
+        Math.floor(info.height / 9),
+        Math.ceil(Math.max((right - left + 1) / 16, (bottom - top + 1) / 9) / 0.84),
+    );
+    const width = units * 16;
+    const height = units * 9;
+    await sharp(screenshot).extract({
+        left: Math.max(0, Math.min(info.width - width, Math.round((left + right - width) / 2))),
+        top: Math.max(0, Math.min(info.height - height, Math.round((top + bottom - height) / 2))),
+        width,
+        height,
+    }).resize(VIEWPORT.width, VIEWPORT.height).png().toFile(outPath);
+}
 
 try {
     console.log('Starting Vite dev server...');
@@ -91,7 +125,7 @@ try {
     viteProc = proc;
     console.log(`Vite ready at ${url}`);
 
-    const browser = await chromium.launch({
+    browser = await chromium.launch({
         // Headless by default so the run doesn't steal desktop focus.
         // Set HEADED=1 to watch it drive a real window.
         headless: process.env.HEADED !== '1',
@@ -105,11 +139,12 @@ try {
         ],
     });
 
-    const context = await browser.newContext({ viewport: VIEWPORT });
+    const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 3 });
     const page = await context.newPage();
 
     // Surface any page errors so we know if an example fails to init
-    page.on('pageerror', (err) => console.error(`[page error] ${err.message}`));
+    const errors = [];
+    page.on('pageerror', (err) => errors.push(err.message));
     page.on('console', (msg) => {
         if (msg.type() === 'error') console.error(`[console error] ${msg.text()}`);
     });
@@ -119,24 +154,33 @@ try {
         console.log(`\n→ ${key}`);
 
         await page.goto(pageUrl, { waitUntil: 'networkidle' });
+        await page.addStyleTag({ content: 'body * { visibility: hidden !important; } canvas { visibility: visible !important; }' });
         await page.waitForTimeout(TIMEOUT_MS);
+        if (errors.length) throw new Error(`${key}: ${errors.join('\n')}`);
+
+        if (key === 'example-spring') {
+            // Stretch the tail so its individual wireframe beads are visible.
+            await page.mouse.move(VIEWPORT.width * 0.28, VIEWPORT.height * 0.65);
+            await page.waitForTimeout(400);
+            await page.mouse.move(VIEWPORT.width * 0.72, VIEWPORT.height * 0.35);
+            await page.waitForTimeout(75);
+        }
 
         const canvas = page.locator('canvas').first();
         const box = await canvas.boundingBox();
 
         if (!box) {
-            console.warn(`  No <canvas> found — skipping`);
-            continue;
+            throw new Error(`${key}: no canvas found`);
         }
 
         const outPath = resolve(screenshotsDir, `${key}.png`);
-        await page.screenshot({ path: outPath, clip: box });
+        await frameDrawing(await page.screenshot({ clip: box }), outPath);
         console.log(`  Saved → ${outPath}`);
     }
 
-    await browser.close();
     console.log('\nAll screenshots captured.');
 } finally {
+    if (browser) await browser.close();
     if (viteProc) {
         viteProc.kill('SIGTERM');
     }
