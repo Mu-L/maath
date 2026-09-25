@@ -9,6 +9,7 @@ Math is the playful web's math engine.
 
 ```sh
 > npm install math
+> npx skills add pmndrs/math --skill math
 ```
 
 ## What's inside
@@ -50,6 +51,10 @@ import { easing, spring } from 'math/time'; // easings & springs
 import { fabrik2, fabrik3 } from 'math/ik'; // inverse kinematics
 // also: math/color, math/geometry, math/shapes — import only what you use
 ```
+
+## Skill
+
+Math has a skill that teaches your agent how to get the most out of it. The skill gives direction on how to design efficient, optimized and data-oriented JS code, outline common gotchas and provide some code examples that optimize memory. Try your agent with `/math` and see how its performance compares.
 
 ## Examples
 
