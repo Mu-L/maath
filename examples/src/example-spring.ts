@@ -3,7 +3,7 @@ import { d } from 'gpucat';
 import type { Vec2 } from 'math';
 import { type Spring, spring2 } from 'math/time';
 import { createInfo } from './common/info';
-import { ink, light, pixels } from './common/ink';
+import { ink, isoline, light, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, palette, spectrum } from './common/theme';
 
@@ -11,7 +11,7 @@ import { clearColor, palette, spectrum } from './common/theme';
 // each following bead springs toward the one ahead (math's spring2, under-
 // damped so it overshoots and settles). Move the pointer (or drag on touch) to
 // whip it around. Beads are instanced spheres, tapering along a fine line, with
-// the head in the accent.
+// a filled accent head and fine latitude and longitude lines on the tail.
 
 const N = 18;
 const SMOOTH_HEAD = 0.08; // approx seconds to catch up
@@ -97,12 +97,14 @@ const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, g.vec4(wo
 const vNormal = g.varying(g.normalize(nrm), 'v_n');
 // only the head is as large as R_HEAD, so its radius picks it out for the accent
 const vHead = g.varying(g.step(g.f32(R_HEAD - 1e-4), inst.w), 'v_head');
+const uv = g.varying(g.attribute('uv', d.vec2f), 'v_uv');
+const grid = g.max(isoline(uv.x.mul(g.f32(8)), 0.7), isoline(uv.y.mul(g.f32(6)), 0.7));
+const rim = g.f32(1).sub(g.smoothstep(g.f32(0.08), g.f32(0.22), vNormal.z.abs()));
+const wire = g.max(grid, rim).mul(g.f32(0.3).add(vNormal.z.max(g.f32(0)).mul(g.f32(0.55))));
+const tailColor = g.mix(ink(palette.base), light, wire);
 const material = new g.Material({
     vertex: clip,
-    fragment: g.vec4(
-        g.mix(ink(palette.base), g.mix(light, ink(ACCENT), vHead), g.smoothstep(g.f32(0.35), g.f32(0.5), vNormal.z)),
-        g.f32(1),
-    ),
+    fragment: g.vec4(g.mix(tailColor, ink(ACCENT), vHead), g.f32(1)),
 });
 const beads = new g.Mesh(sphere, material);
 beads.count = N;
@@ -111,7 +113,7 @@ scene.add(beads);
 // the chain itself, a fine line through every bead
 const chainPoints = new Float32Array(N * 3);
 const chainGeometry = new g.LineGeometry(chainPoints, false, N);
-scene.add(new g.Line(chainGeometry, new g.LineMaterial({ color: g.vec4(light, g.f32(1)), lineWidth: pixels(1) })));
+scene.add(new g.Line(chainGeometry, new g.LineMaterial({ color: g.vec4(light, g.f32(0.35)), lineWidth: pixels(0.7), transparent: true })));
 
 /* hint */
 

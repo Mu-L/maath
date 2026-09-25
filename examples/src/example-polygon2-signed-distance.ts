@@ -3,8 +3,7 @@ import { d } from 'gpucat';
 import { polar, vec2 } from 'math';
 import { polygon2 } from 'math/shapes';
 import { createPanel } from './common/dash';
-import { createInfo } from './common/info';
-import { ink, light, pixels } from './common/ink';
+import { grey, ink, light, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, spectrum } from './common/theme';
 
@@ -137,7 +136,7 @@ const dots = new g.Mesh(
     g.createSphereGeometry(1, 8, 6),
     new g.Material({
         vertex: dotClip,
-        fragment: g.vec4(g.mix(light, ink(ACCENT), g.varying(instance.z, 'v_inside')), g.f32(1)),
+        fragment: g.vec4(g.mix(grey(g.f32(0.4)), ink(ACCENT), g.varying(instance.z, 'v_inside')), g.f32(1)),
     }),
 );
 scene.add(dots);
@@ -148,14 +147,14 @@ const needlePoints = new Float32Array(MAX_PROBES * 2 * 3);
 const needleGeometry = new g.LineSegmentsGeometry(needlePoints, MAX_PROBES * 2);
 const needles = new g.LineSegments(
     needleGeometry,
-    new g.LineMaterial({ color: g.vec4(light, g.f32(0.85)), lineWidth: pixels(1.25), transparent: true }),
+    new g.LineMaterial({ color: g.vec4(light, g.f32(0.25)), lineWidth: pixels(0.8), transparent: true }),
 );
 needles.visible = settings.needles;
 scene.add(needles);
 
 const outlinePoints = new Float32Array(VERTS * 3);
 const outlineGeometry = new g.LineGeometry(outlinePoints, true, VERTS);
-const outlineLine = new g.Line(outlineGeometry, new g.LineMaterial({ color: g.vec4(light, g.f32(0.9)), lineWidth: pixels(1.5) }));
+const outlineLine = new g.Line(outlineGeometry, new g.LineMaterial({ color: g.vec4(light, g.f32(0.9)), lineWidth: pixels(1) }));
 // off by default: the zero contour already is the outline, and drawing it over
 // the top gives the answer away
 outlineLine.visible = settings.outline;
@@ -197,8 +196,6 @@ panel.add(settings, 'outline', { label: 'Show outline' }).onChange(() => {
 panel.monitor(() => probeCount, { label: 'probes' });
 panel.monitor(() => queryMs, { label: 'queries', unit: 'duration' });
 
-const readout = createInfo();
-readout.innerHTML = `<span style="color:${ACCENT}">●</span> Inside · ● Outside<br>Large dots mark distance contours`;
 
 /* render */
 

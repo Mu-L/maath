@@ -4,14 +4,13 @@ import { type Vec2, vec2 } from 'math';
 import { circumcircle } from 'math/geometry';
 import { circle } from 'math/shapes';
 import { easing } from 'math/time';
-import { createInfo } from './common/info';
 import { light, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, palette, rgb, spectrum } from './common/theme';
 
 // A triangle that morphs between shapes, with its circumcircle (math's
 // circumcircle) recomputed every frame. As the triangle flattens toward
-// degenerate the circumcircle balloons - watch the circumradius readout. Faint
+// degenerate the circumcircle balloons. Faint
 // radii from the circumcenter show every vertex at the same distance.
 
 /* shapes */
@@ -93,25 +92,25 @@ window.addEventListener('resize', () => {
 const ACCENT = spectrum[4];
 const triPoints = new Float32Array(9);
 const triGeometry = new g.LineGeometry(triPoints, true, 3);
-const triangle = new g.Line(triGeometry, new g.LineMaterial({ color: g.vec4(light, g.f32(1)), lineWidth: pixels(2.25) }));
+const triangle = new g.Line(triGeometry, new g.LineMaterial({ color: g.vec4(light, g.f32(1)), lineWidth: pixels(1.35) }));
 scene.add(triangle);
 
 const CIRCLE_SEGMENTS = 128;
 const circlePoints = new Float32Array(CIRCLE_SEGMENTS * 3);
 const circleGeometry = new g.LineGeometry(circlePoints, true, CIRCLE_SEGMENTS);
-const circleLine = new g.Line(circleGeometry, new g.LineMaterial({ color: g.vec4(light, g.f32(1)), lineWidth: pixels(1.5) }));
+const circleLine = new g.Line(circleGeometry, new g.LineMaterial({ color: g.vec4(light, g.f32(0.6)), lineWidth: pixels(1), transparent: true }));
 scene.add(circleLine);
 
 const radiiPoints = new Float32Array(6 * 3);
 const radiiGeometry = new g.LineSegmentsGeometry(radiiPoints, 6);
 const radii = new g.LineSegments(
     radiiGeometry,
-    new g.LineMaterial({ color: g.vec4(light, g.f32(0.35)), lineWidth: pixels(1.25), transparent: true }),
+    new g.LineMaterial({ color: g.vec4(light, g.f32(0.35)), lineWidth: pixels(0.8), transparent: true }),
 );
 scene.add(radii);
 
 // dots: 3 triangle vertices + the circumcenter
-const dotGeometry = g.createSphereGeometry(0.05, 16, 12);
+const dotGeometry = g.createSphereGeometry(0.032, 16, 12);
 function makeDot(color: [number, number, number]): g.Mesh {
     const pos = g.attribute('position', d.vec3f);
     const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, g.mul(g.modelWorldMatrix, g.vec4(pos, g.f32(1)))));
@@ -123,7 +122,7 @@ function makeDot(color: [number, number, number]): g.Mesh {
 const vertexDots = [makeDot(rgb(ACCENT)), makeDot(rgb(ACCENT)), makeDot(rgb(ACCENT))];
 const centerDot = makeDot(rgb(palette.light));
 
-/* name wheel + readout */
+/* name wheel */
 
 // a picker-style column of the shape names (DOM overlay). the column scrolls so
 // the active shape sits at the vertical centre, dimming and shrinking with
@@ -159,9 +158,6 @@ function updateWheel(continuousIndex: number) {
         wheelRows[i].style.fontSize = '26px';
     }
 }
-
-// small circumradius readout
-const readout = createInfo();
 
 /* render */
 
@@ -228,7 +224,6 @@ function frame(tms: number) {
     setDot(centerDot, circ.center[0], circ.center[1]);
 
     updateWheel(Math.floor(tt) + local); // eased continuous index, in sync with the morph
-    readout.textContent = `circumradius: ${circ.radius.toFixed(2)}`;
 
     scene.updateWorldMatrix();
     camera.updateViewMatrix();

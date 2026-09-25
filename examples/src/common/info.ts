@@ -1,4 +1,4 @@
-/** A readout, stacked above any earlier ones in the bottom-left corner. */
+/** An interaction hint, stacked above any earlier ones in the bottom-left corner. */
 export function createInfo(): HTMLDivElement {
     let stack = document.querySelector<HTMLDivElement>('.mc-stack');
     if (!stack) {

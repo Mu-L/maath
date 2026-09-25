@@ -148,7 +148,7 @@ const bodyNormal = g.varying(g.normalize(normal), 'v_n');
 
 const bodyMaterial = new g.Material({
     vertex: bodyClip,
-    fragment: g.vec4(g.mix(ink(palette.base), light, g.smoothstep(g.f32(0.35), g.f32(0.5), bodyNormal.z)), g.f32(1)),
+    fragment: g.vec4(g.mix(ink(palette.base), light, g.f32(0.1).add(bodyNormal.dot(g.vec3(-0.35, 0.45, 0.82).normalize()).max(g.f32(0)).mul(g.f32(0.7)))), g.f32(1)),
 });
 
 const body = new g.Mesh(sphere, bodyMaterial);
@@ -197,7 +197,6 @@ const EYE_SIDE = 0.14; // across it
 const hint = createInfo();
 hint.textContent = 'move the pointer to lead the snake — eat the purple pellet to grow';
 
-const counter = createInfo();
 
 /* render */
 
@@ -289,7 +288,6 @@ function frame(tms: number) {
     pelletData[3] = PELLET_RADIUS * (1 + Math.sin(t * 4) * 0.12);
     pelletBuffer.needsUpdate = true;
 
-    counter.textContent = `${bones.length} segments`;
 
     scene.updateWorldMatrix();
     camera.updateViewMatrix();

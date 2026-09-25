@@ -4,9 +4,9 @@ import { type Vec2, vec2 } from 'math';
 import { fabrik2 } from 'math/ik';
 import { createPanel } from './common/dash';
 import { createInfo } from './common/info';
-import { ink, light } from './common/ink';
+import { isoline, grey, ink, light } from './common/ink';
 import { createRenderer } from './common/renderer';
-import { clearColor, palette, spectrum } from './common/theme';
+import { clearColor, spectrum } from './common/theme';
 
 // A gallery of 2D IK setups solved with math's FABRIK solver, following the scenarios in Caliko's
 // own demo app - Caliko being the reference implementation that accompanies Aristidou & Lasenby's
@@ -221,29 +221,25 @@ canvas.addEventListener('pointercancel', release);
 /* materials */
 
 const position = g.attribute('position', d.vec3f);
-const normal = g.attribute('normal', d.vec3f);
-
 const world = g.mul(g.modelWorldMatrix, g.vec4(position, g.f32(1)));
 const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, world));
-const viewNormal = g.varying(
-    g.mul(g.cameraViewMatrix, g.vec4(g.normalize(g.mul(g.modelNormalMatrix, normal)), g.f32(0))).xyz,
-    'v_n',
-);
+const uv = g.varying(g.attribute('uv', d.vec2f), 'v_uv');
+const edge = g.max(isoline(uv.x.mul(g.f32(4)), 0.8), isoline(uv.y, 0.8));
 
 function solidMaterial(color: g.Node<typeof d.vec3f>): g.Material {
     return new g.Material({ vertex: clip, fragment: g.vec4(color, g.f32(1)) });
 }
 
-// White bones and outlined joints keep the accent target easy to find.
+// Fine outlines and small joints keep the target easy to follow.
 const ACCENT = spectrum[6];
-const BONE_MATERIAL = solidMaterial(light);
-const JOINT_MATERIAL = solidMaterial(g.mix(light, ink(palette.base), g.smoothstep(g.f32(0.45), g.f32(0.6), viewNormal.z)));
+const BONE_MATERIAL = solidMaterial(grey(edge.mul(g.f32(0.7))));
+const JOINT_MATERIAL = solidMaterial(ink(ACCENT));
 
 const boneGeometry = g.createCylinderGeometry(1, 1, 1, 14);
 const jointGeometry = g.createSphereGeometry(1, 16, 12);
 
-const BONE_RADIUS = 0.085;
-const JOINT_RADIUS = 0.115;
+const BONE_RADIUS = 0.035;
+const JOINT_RADIUS = 0.055;
 
 /* the structure currently on screen, and the meshes drawn for it */
 
@@ -255,7 +251,7 @@ let chainMeshes: ChainMeshes[] = [];
 let embeddedMeshes: g.Mesh[] = [];
 
 const embeddedMaterial = new g.Material({ vertex: clip, fragment: g.vec4(light, g.f32(1)) });
-const targetGeometry = g.createSphereGeometry(0.14, 18, 12);
+const targetGeometry = g.createSphereGeometry(0.09, 18, 12);
 
 function buildMeshes(): void {
     for (const entry of chainMeshes) {

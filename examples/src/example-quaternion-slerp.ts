@@ -2,16 +2,14 @@ import * as g from 'gpucat';
 import { d } from 'gpucat';
 import { type Euler, euler, type Quat, quat } from 'math';
 import { mulberry32 } from 'math/random';
-import { createInfo } from './common/info';
-import { ink, light, pixels } from './common/ink';
+import { lineInk, ink, light, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, spectrum } from './common/theme';
 
 // One orientation, two ways to interpolate it between random keyframes. The
 // accent outline uses quat.slerp. The neutral wireframe lerps euler angles
 // (euler.fromQuat -> lerp -> quat.fromEuler). They coincide
-// at every keyframe, but between them the ghost twists off-axis: that gap is the
-// error, and the readout reports it as the angle between the two orientations.
+// at every keyframe, but between them the Euler outline twists off-axis.
 
 const KEYFRAMES = 5;
 const SEG_DURATION = 2.2; // seconds per keyframe transition
@@ -107,23 +105,16 @@ function boxEdges(halfExtent: number) {
 
 const slerpEdges = new g.LineSegments(
     boxEdges(0.5),
-    new g.LineMaterial({ color: g.vec4(ink(ACCENT), g.f32(1)), lineWidth: pixels(2) }),
+    new g.LineMaterial({ color: g.vec4(lineInk(ink(ACCENT), 1.1), g.f32(1)), lineWidth: pixels(1.25) }),
 );
 scene.add(slerpEdges);
 
 // The Euler outline is slightly larger so both paths remain visible at keyframes.
 const eulerBox = new g.LineSegments(
     boxEdges(0.61),
-    new g.LineMaterial({ color: g.vec4(light, g.f32(1)), lineWidth: pixels(1.5) }),
+    new g.LineMaterial({ color: g.vec4(lineInk(light, 1.1), g.f32(1)), lineWidth: pixels(1) }),
 );
 scene.add(eulerBox);
-
-/* readout */
-
-const readout = createInfo();
-readout.innerHTML =
-    `<span style="color:${ACCENT}">━</span> Quaternion SLERP` + '<br>━ Euler interpolation' + '<br><span class="mc-dim"></span>';
-const errorReadout = readout.lastElementChild as HTMLSpanElement;
 
 /* render */
 
@@ -156,13 +147,6 @@ function frame(tms: number) {
     eL[1] = eA[1] + (eB[1] - eA[1]) * local;
     eL[2] = eA[2] + (eB[2] - eA[2]) * local;
     quat.fromEuler(eulerBox.quaternion, eL);
-
-    // angular error between the two orientations (degrees)
-    const qa = slerpBox.quaternion;
-    const qb = eulerBox.quaternion;
-    const dot = Math.min(1, Math.abs(qa[0] * qb[0] + qa[1] * qb[1] + qa[2] * qb[2] + qa[3] * qb[3]));
-    const errorDeg = (2 * Math.acos(dot) * 180) / Math.PI;
-    errorReadout.textContent = `Orientation difference: ${errorDeg.toFixed(1)}°`;
 
     scene.updateWorldMatrix();
     camera.updateViewMatrix();

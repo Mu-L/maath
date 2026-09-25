@@ -4,8 +4,7 @@ import { deltaAngle, mat4, type Vec3, vec3 } from 'math';
 import { mulberry32, random } from 'math/random';
 import { type Box3, box3, frustum, type Sphere } from 'math/shapes';
 import { createPanel } from './common/dash';
-import { createInfo } from './common/info';
-import { ink, isoline, light, pixels } from './common/ink';
+import { depthInk, lineInk, ink, isoline, light, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, palette, rgb, spectrum } from './common/theme';
 
@@ -13,7 +12,7 @@ import { clearColor, palette, rgb, spectrum } from './common/theme';
 // own. Every agent's six planes come from math's frustum, extracted from its own
 // projection and view matrices, and every building and orb on the map is tested
 // against every agent once a frame - frustum.intersectsBox3 and
-// intersectsSphere. Accent fills mark visible objects, while faint neutral
+// intersectsSphere. Accent outlines mark visible objects, while faint neutral
 // outlines keep unseen objects available for comparison.
 //
 // The cones are drawn from frustum.corners, which recovers the eight corners by
@@ -31,8 +30,8 @@ const BLOCKS = 8; // city blocks per side, so BLOCKS + 1 streets and intersectio
 const BLOCK = 4; // centre to centre of neighbouring streets
 const FIELD = BLOCKS * BLOCK;
 const ROAD = 1.1; // kept clear of buildings
-const PER_BLOCK = 22;
-const ORBS = 420;
+const PER_BLOCK = 8;
+const ORBS = 120;
 const EYE_HEIGHT = 0.75;
 const TURN_RATE = 7; // how fast an agent swings to face a new street
 
@@ -43,7 +42,7 @@ function street(i: number): number {
 
 type Settings = { agents: number; fov: number; range: number; speed: number; cones: boolean };
 
-const settings: Settings = { agents: 9, fov: 52, range: 5, speed: 2.2, cones: true };
+const settings: Settings = { agents: 3, fov: 52, range: 5, speed: 2.2, cones: true };
 
 /* the map */
 
@@ -248,8 +247,8 @@ const scene = new g.Scene();
 // high and angled, so the map reads flat but the buildings still have height
 const camera = new g.PerspectiveCamera(Math.PI / 5, window.innerWidth / window.innerHeight, 0.1, 200);
 camera.position[0] = 0;
-camera.position[1] = 36;
-camera.position[2] = 36;
+camera.position[1] = 46;
+camera.position[2] = 46;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
@@ -287,12 +286,13 @@ function createField(geometry: g.Geometry, count: number, box: boolean) {
     const vTint = g.varying(shading.yzw, 'v_tint');
     const uv = g.varying(g.attribute('uv', d.vec2f), 'v_uv');
     const edge = box
-        ? g.max(isoline(uv.x, 1.25), isoline(uv.y, 1.25))
+        ? g.max(isoline(uv.x, 1.1), isoline(uv.y, 1.1))
         : g.f32(1).sub(g.smoothstep(g.f32(0.35), g.f32(0.55), vNormal.z.abs()));
-    const unseenColor = g.mix(ink(palette.base), light, edge.mul(g.f32(0.28)));
-    const seenColor = g.mix(vTint, ink(palette.base), edge.mul(g.f32(0.65)));
+    const seenEdge = box ? g.max(isoline(uv.x, 2.2), isoline(uv.y, 2.2)) : edge;
+    const unseenColor = g.mix(ink(palette.base), light, edge.mul(g.f32(0.4)));
+    const seenColor = g.mix(ink(palette.base), vTint, g.f32(0.045).add(seenEdge.mul(g.f32(0.95))));
     const color = g.mix(unseenColor, seenColor, vSeen);
-    const mesh = new g.Mesh(geometry, new g.Material({ vertex: clip, fragment: g.vec4(color, g.f32(1)) }));
+    const mesh = new g.Mesh(geometry, new g.Material({ vertex: clip, fragment: g.vec4(depthInk(color, world, 20), g.f32(1)) }));
     mesh.count = count;
     scene.add(mesh);
 
@@ -332,7 +332,7 @@ orbField.extentBuffer.needsUpdate = true;
 // the twelve edges of the eight corners: near ring, far ring, and the struts
 const EDGES = [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7];
 
-const coneMaterial = new g.LineMaterial({ color: g.vec4(light, g.f32(1)), lineWidth: pixels(1.75), transparent: true });
+const coneMaterial = new g.LineMaterial({ color: g.vec4(lineInk(light, 20), g.f32(0.8)), lineWidth: pixels(1.1), transparent: true });
 coneMaterial.depthTest = false;
 coneMaterial.depthWrite = false;
 
@@ -359,9 +359,6 @@ panel.monitor(() => `${seen} / ${seenBy.length}`, { label: 'seen' });
 panel.monitor(() => settings.agents * seenBy.length, { label: 'tests' });
 panel.monitor(() => lookMs, { label: 'culling', unit: 'duration' });
 
-const readout = createInfo();
-readout.innerHTML =
-    `<span style="color:${ACCENT}">■</span> Seen by an agent · <span style="opacity:0.4">□ Unseen</span>` + '<br>━ Camera bounds';
 
 /* render */
 

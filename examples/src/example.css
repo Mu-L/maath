@@ -18,7 +18,7 @@ canvas {
     height: 100%;
 }
 
-/* A quiet backing keeps readouts legible over moving geometry. */
+/* Interaction hints stay quiet at the edge of the study. */
 .mc-stack {
     position: absolute;
     bottom: 18px;
@@ -29,9 +29,6 @@ canvas {
     max-width: min(440px, calc(100vw - 40px));
     pointer-events: none;
     box-sizing: border-box;
-    padding: 10px 12px;
-    background: rgb(20 18 14 / 92%);
-    border-left: 2px solid var(--mc-line);
 }
 
 .mc-info {
@@ -40,8 +37,8 @@ canvas {
     font-size: 12px;
     line-height: 1.65;
     letter-spacing: 0.02em;
-    color: var(--mc-ink);
-    text-shadow: none;
+    color: var(--mc-dim);
+    text-shadow: 0 1px 3px var(--mc-base);
 }
 
 .mc-dim {

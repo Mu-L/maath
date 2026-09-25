@@ -6,7 +6,7 @@ import { createPanel } from './common/dash';
 import { createInfo } from './common/info';
 import { ink, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
-import { clearColor, greyAt, palette, rgb, spectrum } from './common/theme';
+import { clearColor, greyAt, spectrum } from './common/theme';
 
 // Draw a shape by dragging, release to watch it triangulate. The freehand
 // outline is a simple (possibly concave) polygon, and on release math's ear
@@ -84,7 +84,7 @@ const fillMaterial = new g.Material({
     vertex: fillClip,
     fragment: g.vec4(
         g.mix(
-            g.vec3(...greyAt(0.12)),
+            g.vec3(...greyAt(0.055)),
             g.select(g.varying(fillCol, 'v_fill'), ink(ACCENT), g.equal(fillPiece, hoveredPiece)),
             showResult,
         ),
@@ -94,12 +94,12 @@ const fillMaterial = new g.Material({
 });
 
 const edgeMaterial = new g.LineMaterial({
-    color: g.vec4f(...rgb(palette.light), 1),
-    lineWidth: pixels(1.25),
+    color: g.vec4f(...greyAt(0.55), 1),
+    lineWidth: pixels(0.8),
 });
 const boundaryMaterial = new g.LineMaterial({
     color: g.vec4(ink(ACCENT), g.f32(1)),
-    lineWidth: pixels(2.25),
+    lineWidth: pixels(1.35),
 });
 
 /* live objects, rebuilt on each release */
@@ -168,7 +168,7 @@ function showVertexDots(polygon: number[], n: number): void {
 
 /** Alternate quiet fills so the cuts and hovered piece carry the explanation. */
 function triColor(i: number): [number, number, number] {
-    return greyAt(i % 2 === 0 ? 0.12 : 0.22);
+    return greyAt(i % 2 === 0 ? 0.055 : 0.095);
 }
 
 /* readout / stats */
@@ -179,14 +179,9 @@ const settings = { view: 'Result' };
 let stats = { vertices: 0, triangles: 0, ms: 0 };
 
 function updateReadout(): void {
-    const title = settings.view === 'Original' ? 'Your original polygon' : `${stats.triangles} triangles inside one polygon`;
-    const hovered = Number(hoveredPiece.value);
-    const detail = hovered >= 0 ? `Triangle ${hovered + 1} of ${stats.triangles}` : 'Hover a triangle to highlight it';
-    readout.innerHTML =
-        `<strong>${stats.vertices ? title : 'Drag to draw a polygon'}</strong>` +
-        `<br><span style="color:${ACCENT}">━</span> Original boundary` +
-        (settings.view === 'Result' ? ' &nbsp; ━ Internal cuts' : '') +
-        `<br><span class="mc-dim">${stats.vertices && settings.view === 'Result' ? detail + ' · ' : ''}Drag to draw a new shape</span>`;
+    readout.textContent = settings.view === 'Result'
+        ? 'Drag to draw a polygon · Hover a triangle to highlight it'
+        : 'Drag to draw a polygon';
 }
 
 function updateView(): void {

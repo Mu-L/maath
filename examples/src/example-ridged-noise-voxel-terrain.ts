@@ -3,24 +3,23 @@ import { d } from 'gpucat';
 import { quat } from 'math';
 import { ridged, simplex2d } from 'math/noise';
 import { createPanel } from './common/dash';
-import { grey, ink } from './common/ink';
+import { grey, ink, isoline, light } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, spectrum } from './common/theme';
 
-// A big voxel landscape whose mountains come from math's ridged fBm (ridged
+// A compact voxel landscape whose mountains come from math's ridged fBm (ridged
 // folds each octave into sharp crests). It's turned into a mesh by a tiny
 // "culled mesher" - it emits a quad only for a solid voxel face whose neighbour
 // is empty, so the interior of the block is never drawn. Being one block type,
-// soft neutral face tones describe the relief without directional lighting. Only
+// three flat face tones and fine column seams describe the relief. Only
 // the tops of the tallest columns catch the accent.
 
-const GX = 72;
-const GY = 44;
-const GZ = 72;
-const VOXEL = 0.12;
+const settings = { grid: 24, seed: 1337, height: 20, detail: 1, spin: false };
+const GY = 48;
+const VOXEL = 0.16;
 const ACCENT = spectrum[0];
-const BASE = 6; // minimum terrain height
-const H_FREQ = 0.045; // terrain horizontal frequency
+const BASE = 4; // minimum terrain height
+const H_FREQ = 0.09; // terrain horizontal frequency
 
 // the six cube faces: outward normal, neighbour offset, and 4 corner offsets
 const FACES = [
@@ -86,17 +85,20 @@ const FACES = [
     },
 ] as const;
 
-const idx = (x: number, y: number, z: number) => (x * GY + y) * GZ + z;
+const idx = (x: number, y: number, z: number) => (x * GY + y) * settings.grid + z;
 
 /* voxel field: a ridged-fBm heightfield, solid below the surface */
 
 function buildSolid(seed: number, height: number, detail: number): Uint8Array {
     const hgen = simplex2d.create(seed);
-    const solid = new Uint8Array(GX * GY * GZ);
+    const solid = new Uint8Array(settings.grid * GY * settings.grid);
 
-    for (let x = 0; x < GX; x++) {
-        for (let z = 0; z < GZ; z++) {
-            const r = ridged((f) => simplex2d.sample(hgen, x * H_FREQ * detail * f, z * H_FREQ * detail * f), 4, 2, 0.5);
+    for (let x = 0; x < settings.grid; x++) {
+        for (let z = 0; z < settings.grid; z++) {
+            // Keep the existing terrain centered as new columns are added around it.
+            const px = (x - (settings.grid - 24) / 2) * H_FREQ * detail;
+            const pz = (z - (settings.grid - 24) / 2) * H_FREQ * detail;
+            const r = ridged((f) => simplex2d.sample(hgen, px * f, pz * f), 4, 2, 0.5);
             const h = BASE + height * r;
             for (let y = 0; y < GY && y < h; y++) {
                 solid[idx(x, y, z)] = 1;
@@ -107,7 +109,7 @@ function buildSolid(seed: number, height: number, detail: number): Uint8Array {
 }
 
 const solidAt = (solid: Uint8Array, x: number, y: number, z: number) =>
-    x >= 0 && x < GX && y >= 0 && y < GY && z >= 0 && z < GZ && solid[idx(x, y, z)] === 1;
+    x >= 0 && x < settings.grid && y >= 0 && y < GY && z >= 0 && z < settings.grid && solid[idx(x, y, z)] === 1;
 
 /* culled mesher: one quad per exposed solid face */
 
@@ -115,13 +117,13 @@ function mesh(solid: Uint8Array): { positions: Float32Array; normals: Float32Arr
     const positions: number[] = [];
     const normals: number[] = [];
     const indices: number[] = [];
-    const ox = (GX / 2) * VOXEL;
-    const oy = (GY / 2) * VOXEL;
-    const oz = (GZ / 2) * VOXEL;
+    const ox = (settings.grid / 2) * VOXEL;
+    const oy = 1.8;
+    const oz = (settings.grid / 2) * VOXEL;
 
-    for (let x = 0; x < GX; x++) {
+    for (let x = 0; x < settings.grid; x++) {
         for (let y = 0; y < GY; y++) {
-            for (let z = 0; z < GZ; z++) {
+            for (let z = 0; z < settings.grid; z++) {
                 if (solid[idx(x, y, z)] !== 1) continue;
                 for (const face of FACES) {
                     if (solidAt(solid, x + face.d[0], y + face.d[1], z + face.d[2])) continue; // hidden face
@@ -149,21 +151,28 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 const scene = new g.Scene();
 
-const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position[0] = 7;
+const camera = new g.OrthographicCamera(-4, 4, 4, -4, 0.1, 100);
+camera.position[0] = 8;
 camera.position[1] = 6;
-camera.position[2] = 11;
+camera.position[2] = 8;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.1;
 
-window.addEventListener('resize', () => {
+function resize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
+    const aspect = window.innerWidth / window.innerHeight;
+    const height = (4 * Math.max(1, settings.grid / 24)) / Math.min(1, aspect);
+    camera.left = -height * aspect;
+    camera.right = height * aspect;
+    camera.top = height;
+    camera.bottom = -height;
     camera.updateProjectionMatrix();
-});
+}
+window.addEventListener('resize', resize);
+resize();
 
 /* flat material, shared across geometry rebuilds */
 
@@ -178,10 +187,17 @@ function makeMaterial(): g.Material {
     const vHeight = g.varying(pos.y, 'v_h'); // model-space height, stable while spinning
     const vTop = g.varying(nrm.y.max(g.f32(0)), 'v_top');
     const vSide = g.varying(nrm.z.abs(), 'v_side');
-    const clay = grey(g.mix(g.f32(0.38).add(vSide.mul(g.f32(0.14))), g.f32(0.8), vTop));
+    const clay = grey(g.mix(g.f32(0.28).add(vSide.mul(g.f32(0.2))), g.f32(0.9), vTop));
+    // Vertical seams and cap borders describe columns without gridding every voxel face.
+    const grid = g.varying(pos.div(g.f32(VOXEL)), 'v_grid');
+    const xEdge = isoline(grid.x, 0.65);
+    const zEdge = isoline(grid.z, 0.65);
+    const edges = g.mix(g.mix(zEdge, xEdge, vSide), g.max(xEdge, zEdge), vTop);
     const crest = ink(ACCENT);
     const tinted = g.step(peak, vHeight).mul(vTop);
-    return new g.Material({ vertex: clip, fragment: g.vec4(g.mix(clay, crest, tinted), g.f32(1)) });
+    const face = g.mix(clay, crest, tinted);
+    const color = g.mix(face, g.mix(light, grey(g.f32(0.25)), vTop), edges.mul(g.f32(0.22)));
+    return new g.Material({ vertex: clip, fragment: g.vec4(color, g.f32(1)) });
 }
 const material = makeMaterial();
 
@@ -199,10 +215,10 @@ function rebuild() {
         chunk.geometry.dispose();
     }
     chunk = new g.Mesh(geometry, material);
-    // the highest two layers carry the accent
+    // Only the highest caps carry the accent
     let top = -Infinity;
     for (let i = 1; i < m.positions.length; i += 3) top = Math.max(top, m.positions[i]);
-    peak.value = top - VOXEL * 1.5;
+    peak.value = top - VOXEL * 0.5;
     scene.add(chunk);
     scene.updateWorldMatrix();
     faceCount = m.indices.length / 6;
@@ -210,11 +226,14 @@ function rebuild() {
 
 /* ui */
 
-const settings = { seed: 1337, height: 24, detail: 1, spin: true };
 let faceCount = 0;
 
 const panel = createPanel('ridged noise voxel terrain', ACCENT);
-panel.add(settings, 'height', { min: 8, max: 34, step: 0.1, label: 'Mountains' }).onChange(rebuild);
+panel.add(settings, 'grid', { min: 12, max: 64, step: 2, label: 'Grid size' }).onChange(() => {
+    rebuild();
+    resize();
+});
+panel.add(settings, 'height', { min: 6, max: 36, step: 0.1, label: 'Mountains' }).onChange(rebuild);
 panel.add(settings, 'detail', { min: 0.5, max: 2, step: 0.01, label: 'Detail' }).onChange(rebuild);
 panel.add(settings, 'spin', { label: 'Auto-spin' });
 panel.button('↻ Reshuffle', () => {

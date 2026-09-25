@@ -2,8 +2,7 @@ import * as g from 'gpucat';
 import { d } from 'gpucat';
 import { mat4, quat, quat2, type Vec3, vec3 } from 'math';
 import { createPanel } from './common/dash';
-import { createInfo } from './common/info';
-import { ink, light, pixels } from './common/ink';
+import { lineInk, ink, light, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, palette, spectrum } from './common/theme';
 
@@ -173,8 +172,8 @@ canvas.style.touchAction = 'none';
 const scene = new g.Scene();
 
 const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position[1] = 0.6;
-camera.position[2] = 4.4;
+camera.position[1] = 0.72;
+camera.position[2] = 5.28;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
@@ -230,7 +229,7 @@ function createTubeMesh(x: number) {
     const lineGeometry = new g.LineSegmentsGeometry(linePositions, edgeIndices.length);
     const lines = new g.LineSegments(
         lineGeometry,
-        new g.LineMaterial({ color: g.vec4(light, g.f32(1)), lineWidth: pixels(1.25) }),
+        new g.LineMaterial({ color: g.vec4(lineInk(light, 0.7), g.f32(1)), lineWidth: pixels(0.8) }),
     );
     lines.position[0] = x;
     scene.add(lines);
@@ -245,7 +244,7 @@ const ringPositions = new Float32Array(SEGMENTS * 12);
 const ringGeometry = new g.LineSegmentsGeometry(ringPositions, SEGMENTS * 4);
 const ring = new g.LineSegments(
     ringGeometry,
-    new g.LineMaterial({ color: g.vec4(ink(spectrum[5]), g.f32(1)), lineWidth: pixels(2) }),
+    new g.LineMaterial({ color: g.vec4(lineInk(ink(spectrum[5]), 0.7), g.f32(1)), lineWidth: pixels(1.25) }),
 );
 scene.add(ring);
 
@@ -260,11 +259,6 @@ function updateTube(tube: ReturnType<typeof createTubeMesh>): void {
     tube.lineGeometry.update(tube.linePositions);
 }
 
-const readout = createInfo();
-readout.innerHTML =
-    'Same twist, two blending methods' +
-    '<br>Left · Linear blend / pinches at the middle' +
-    '<br>Right · Dual quaternion / preserves volume';
 
 /* panel */
 

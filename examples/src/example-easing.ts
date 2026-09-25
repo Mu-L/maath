@@ -96,7 +96,7 @@ function drawCard(index: number, p: number) {
     const mapY = (e: number) => py + (1 - e) * PLOT; // e=0 bottom, e=1 top
 
     // faint quarter grid
-    ctx.strokeStyle = 'rgba(234, 229, 218, 0.12)';
+    ctx.strokeStyle = 'rgba(234, 229, 218, 0.06)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let k = 1; k < 4; k++) {
@@ -119,7 +119,7 @@ function drawCard(index: number, p: number) {
 
     // the easing curve (the function itself, sampled)
     ctx.strokeStyle = palette.light;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1.1;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
     ctx.beginPath();
@@ -135,7 +135,7 @@ function drawCard(index: number, p: number) {
     // the tracing dot at the shared t
     ctx.fillStyle = ACCENT;
     ctx.beginPath();
-    ctx.arc(mapX(p), mapY(fn(p)), 4.5, 0, Math.PI * 2);
+    ctx.arc(mapX(p), mapY(fn(p)), 3, 0, Math.PI * 2);
     ctx.fill();
 
     // name below the plot

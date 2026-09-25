@@ -87,8 +87,8 @@ function createTrails(particles: number, color: g.Node<typeof g.d.vec4f>, width:
     return { points, geometry };
 }
 
-const trails = createTrails(PARTICLES - TRACERS, g.vec4(light, g.f32(1)), 1);
-const tracers = createTrails(TRACERS, g.vec4(ink(ACCENT), g.f32(1)), 2);
+const trails = createTrails(PARTICLES - TRACERS, g.vec4(light, g.f32(0.55)), 0.7);
+const tracers = createTrails(TRACERS, g.vec4(ink(ACCENT), g.f32(0.85)), 1.2);
 
 /* render */
 

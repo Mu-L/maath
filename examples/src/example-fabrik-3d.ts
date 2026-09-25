@@ -4,7 +4,7 @@ import { type Vec3, vec3 } from 'math';
 import { fabrik3 } from 'math/ik';
 import { createPanel } from './common/dash';
 import { createInfo } from './common/info';
-import { grey, ink, light } from './common/ink';
+import { depthInk, grey, ink, isoline, light } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, palette, spectrum } from './common/theme';
 
@@ -264,32 +264,29 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
 });
 
-/* materials - flat bones, outlined joints, and an accent target */
+/* materials - outlined bones, accent joints and targets */
 
 const position = g.attribute('position', d.vec3f);
-const normal = g.attribute('normal', d.vec3f);
-
 const world = g.mul(g.modelWorldMatrix, g.vec4(position, g.f32(1)));
 const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, world));
-const viewNormal = g.varying(
-    g.mul(g.cameraViewMatrix, g.vec4(g.normalize(g.mul(g.modelNormalMatrix, normal)), g.f32(0))).xyz,
-    'v_n',
-);
+const uv = g.varying(g.attribute('uv', d.vec2f), 'v_uv');
+// Four longitudinal lines and end rings describe each bone without a solid fill.
+const boneEdge = g.max(isoline(uv.x.mul(g.f32(4)), 0.8), isoline(uv.y, 0.8));
 
 function solidMaterial(color: g.Node<typeof d.vec3f>): g.Material {
-    return new g.Material({ vertex: clip, fragment: g.vec4(color, g.f32(1)) });
+    return new g.Material({ vertex: clip, fragment: g.vec4(depthInk(color, world.xyz, 2), g.f32(1)) });
 }
 
 const ACCENT = spectrum[1];
-const BONE_MATERIAL = solidMaterial(light);
-const BRANCH_MATERIAL = solidMaterial(grey(g.f32(0.65)));
-const JOINT_MATERIAL = solidMaterial(g.mix(light, ink(palette.base), g.smoothstep(g.f32(0.45), g.f32(0.6), viewNormal.z)));
+const BONE_MATERIAL = solidMaterial(g.mix(ink(palette.base), light, boneEdge.mul(g.f32(0.75))));
+const BRANCH_MATERIAL = solidMaterial(g.mix(ink(palette.base), grey(g.f32(0.5)), boneEdge));
+const JOINT_MATERIAL = solidMaterial(ink(ACCENT));
 
 const boneGeometry = g.createCylinderGeometry(1, 1, 1, 16);
 const jointGeometry = g.createSphereGeometry(1, 16, 12);
 
-const BONE_RADIUS = 0.07;
-const JOINT_RADIUS = 0.1;
+const BONE_RADIUS = 0.035;
+const JOINT_RADIUS = 0.05;
 
 /* the structure currently on screen, and the meshes drawn for it */
 
@@ -358,7 +355,7 @@ function updateMeshes(): void {
 
 /* targets */
 
-const targetGeometry = g.createSphereGeometry(0.13, 20, 14);
+const targetGeometry = g.createSphereGeometry(0.075, 20, 14);
 const targetMesh = new g.Mesh(targetGeometry, new g.Material({ vertex: clip, fragment: g.vec4(ink(ACCENT), g.f32(1)) }));
 scene.add(targetMesh);
 

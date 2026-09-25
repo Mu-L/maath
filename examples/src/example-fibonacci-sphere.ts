@@ -51,7 +51,7 @@ const scene = new g.Scene();
 const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position[0] = 0;
 camera.position[1] = 0.6;
-camera.position[2] = 6.5;
+camera.position[2] = 9;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
@@ -66,25 +66,12 @@ window.addEventListener('resize', () => {
 
 const sphereGeometry = g.createSphereGeometry(1, 12, 8);
 
-// Hide the rear hemisphere so overlapping projections cannot merge the dots.
-const shellPosition = g.attribute('position', d.vec3f);
-const shellClip = g.mul(
-    g.cameraProjectionMatrix,
-    g.mul(g.cameraViewMatrix, g.mul(g.modelWorldMatrix, g.vec4(shellPosition, g.f32(1)))),
-);
-scene.add(
-    new g.Mesh(
-        g.createSphereGeometry(SPHERE_RADIUS * 0.997, 64, 48),
-        new g.Material({ vertex: shellClip, fragment: g.vec4(ink(palette.base), g.f32(1)) }),
-    ),
-);
-
 /* build the instanced point cloud */
 
 // nearest-neighbour spacing on the sphere scales as ~1/sqrt(n); size the dots to
 // match so the shell stays dense-but-distinct as N changes.
 function markerRadius(n: number): number {
-    return Math.max(0.006, Math.min(0.06, (SPHERE_RADIUS * 0.42) / Math.sqrt(n)));
+    return Math.max(0.006, Math.min(0.06, (SPHERE_RADIUS * 0.28) / Math.sqrt(n)));
 }
 
 function buildPoints(points: number[]): g.Mesh {
@@ -118,7 +105,12 @@ function buildPoints(points: number[]): g.Mesh {
     const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, world));
     const vArm = g.varying(instanceOnArm, 'v_arm');
 
-    const lit = g.Var('lit', g.mix(light, ink(ACCENT), vArm));
+    // Depth fades the rear points into the paper while keeping the full lattice visible.
+    const view = g.mul(g.cameraViewMatrix, world);
+    const center = g.mul(g.cameraViewMatrix, g.mul(g.modelWorldMatrix, g.vec4(0, 0, 0, 1)));
+    const depth = g.varying(view.z.sub(center.z).div(g.f32(SPHERE_RADIUS)), 'v_depth');
+    const shade = g.smoothstep(g.f32(-1), g.f32(1), depth).mul(g.f32(0.75)).add(g.f32(0.18));
+    const lit = g.mix(ink(palette.base), g.mix(light, ink(ACCENT), vArm), shade);
 
     const material = new g.Material({ vertex: clip, fragment: g.vec4(lit, g.f32(1)) });
     const mesh = new g.Mesh(sphereGeometry, material);

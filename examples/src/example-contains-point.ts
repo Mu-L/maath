@@ -3,8 +3,7 @@ import { d } from 'gpucat';
 import { mat3, quat, vec3, type Vec3 } from 'math';
 import { obb3, type OBB3 } from 'math/shapes';
 import { createPanel } from './common/dash';
-import { createInfo } from './common/info';
-import { ink, light, pixels } from './common/ink';
+import { depthInk, lineInk, ink, light, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, palette, spectrum } from './common/theme';
 
@@ -30,9 +29,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 const scene = new g.Scene();
 
 const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position[0] = 6.5;
-camera.position[1] = 5;
-camera.position[2] = 7.5;
+camera.position[0] = 7.8;
+camera.position[1] = 6;
+camera.position[2] = 9;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
@@ -94,7 +93,7 @@ function addPoints(inside: boolean): void {
     const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, world));
     const material = new g.Material({
         vertex: clip,
-        fragment: g.vec4(ink(inside ? ACCENT : palette.dim), g.f32(1)),
+        fragment: g.vec4(depthInk(ink(inside ? ACCENT : palette.muted), world.xyz, 3), g.f32(1)),
         transparent: inside,
         depthTest: !inside,
         depthWrite: !inside,
@@ -119,7 +118,7 @@ const boxSegments = new Float32Array(12 * 2 * 3);
 const boxGeometry = new g.LineSegmentsGeometry(boxSegments, 24);
 const boxOutline = new g.LineSegments(
     boxGeometry,
-    new g.LineMaterial({ color: g.vec4(light, g.f32(1)), lineWidth: pixels(1.5) }),
+    new g.LineMaterial({ color: g.vec4(lineInk(light, 3), g.f32(1)), lineWidth: pixels(1) }),
 );
 scene.add(boxOutline);
 
@@ -158,11 +157,6 @@ panel.add(settings, 'speed', { min: 0, max: 3, step: 0.01, label: 'Speed' });
 panel.add(settings, 'outside', { label: 'Outside points' }).onChange(() => {
     showOutside.value = settings.outside ? 1 : 0;
 });
-const readout = createInfo();
-readout.innerHTML =
-    '<strong>Which points are inside the box?</strong>' +
-    `<br><span style="color:${ACCENT}">●</span> Inside &nbsp; <span style="color:${palette.muted}">●</span> Outside &nbsp; ━ Box boundary` +
-    '<br><span class="mc-dim">Drag to orbit · set speed to 0 to inspect</span>';
 let insideCount = 0;
 panel.monitor(() => insideCount, { label: 'inside', format: (value) => `${value} / ${COUNT}` });
 

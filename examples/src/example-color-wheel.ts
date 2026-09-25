@@ -27,7 +27,7 @@ canvas.style.touchAction = 'none';
 const scene = new g.Scene();
 
 const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position[2] = 4;
+camera.position[2] = 5;
 camera.updateProjectionMatrix();
 scene.add(camera);
 

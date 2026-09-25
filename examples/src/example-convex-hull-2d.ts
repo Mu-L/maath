@@ -4,7 +4,7 @@ import { mat4, vec4 } from 'math';
 import { quickhull2 } from 'math/geometry';
 import { mulberry32 } from 'math/random';
 import { createInfo } from './common/info';
-import { ink, light, pixels } from './common/ink';
+import { grey, ink, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, spectrum } from './common/theme';
 
@@ -77,7 +77,7 @@ window.addEventListener('resize', () => {
 // hull outline (warm white, closed) - allocated for the worst case (all points on hull)
 const hullPoints = new Float32Array(POINT_COUNT * 3);
 const hullGeometry = new g.LineGeometry(hullPoints, true, POINT_COUNT);
-const hullLine = new g.Line(hullGeometry, new g.LineMaterial({ color: g.vec4(light, g.f32(1)), lineWidth: pixels(2.25) }));
+const hullLine = new g.Line(hullGeometry, new g.LineMaterial({ color: g.vec4(grey(g.f32(0.75)), g.f32(1)), lineWidth: pixels(1.35) }));
 scene.add(hullLine);
 
 // two shared materials: the brand light for every point, the accent for hull vertices
@@ -87,7 +87,7 @@ function unlitMaterial(fragment: g.Node<typeof d.vec4f>): g.Material {
     const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, world));
     return new g.Material({ vertex: clip, fragment });
 }
-const pointMaterial = unlitMaterial(g.vec4(light, g.f32(1)));
+const pointMaterial = unlitMaterial(g.vec4(grey(g.f32(0.45)), g.f32(1)));
 const markerMaterial = unlitMaterial(g.vec4(ink(ACCENT), g.f32(1)));
 
 const dotGeometry = g.createSphereGeometry(0.04, 16, 12);
@@ -174,6 +174,7 @@ canvas.addEventListener('pointerleave', () => {
 /* readout */
 
 const readout = createInfo();
+readout.textContent = 'Move the pointer to steer a point onto the hull';
 
 /* render */
 
@@ -205,9 +206,7 @@ function frame(tms: number) {
     }
 
     // math: convex hull, indices in ccw order
-    const t0 = performance.now();
     const hull = quickhull2(points);
-    const hullMs = performance.now() - t0;
 
     // hull outline (only the K hull vertices, closed)
     for (let j = 0; j < hull.length; j++) {
@@ -228,11 +227,6 @@ function frame(tms: number) {
             marker.visible = false;
         }
     }
-
-    const onHull = hull.includes(CONTROLLED);
-    readout.innerHTML =
-        `points ${POINT_COUNT} | hull ${hull.length} | quickhull2 ${hullMs.toFixed(2)}ms` +
-        `<br><span class="mc-dim">steer a point with the pointer - ${onHull ? 'yours is on the hull' : 'push it onto the hull'}</span>`;
 
     scene.updateWorldMatrix();
     camera.updateViewMatrix();

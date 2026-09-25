@@ -4,7 +4,7 @@ import { mat4, quat, vec3 as v3 } from 'math';
 import { quickhull3 } from 'math/geometry';
 import { mulberry32 } from 'math/random';
 import { createPanel } from './common/dash';
-import { grey, ink } from './common/ink';
+import { depthInk, grey, ink } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, spectrum } from './common/theme';
 
@@ -135,9 +135,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 const scene = new g.Scene();
 
 const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position[0] = -1.8;
-camera.position[1] = 1.9;
-camera.position[2] = 4;
+camera.position[0] = -2.7;
+camera.position[1] = 2.85;
+camera.position[2] = 6;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
@@ -151,7 +151,7 @@ window.addEventListener('resize', () => {
 });
 
 const sphereGeometry = g.createSphereGeometry(1, 12, 8);
-const HULL_MARKER_RADIUS = 0.03;
+const HULL_MARKER_RADIUS = 0.018;
 const INNER_MARKER_RADIUS = 0.009;
 const ACCENT = spectrum[0];
 
@@ -159,12 +159,6 @@ const ACCENT = spectrum[0];
 
 let pointsMesh: g.Mesh | null = null;
 let hullMesh: g.Mesh | null = null;
-/** Spatial color gives the shell and its vertices the same depth cues. */
-function hullColor(position: g.Node<typeof d.vec3f>): g.Node<typeof d.vec3f> {
-    const phase = g.clamp(position.dot(g.vec3(0.35, 0.12, -0.2)).add(g.f32(0.5)), g.f32(0), g.f32(1));
-    return g.mix(ink(spectrum[6]), ink(ACCENT), phase);
-}
-
 function buildPoints(points: number[], hullSet: Set<number>): g.Mesh {
     const numPoints = points.length / 3;
     const instanceMatrices = new Float32Array(numPoints * 16);
@@ -195,9 +189,8 @@ function buildPoints(points: number[], hullSet: Set<number>): g.Mesh {
     const world = g.mul(instanceTransform, g.vec4(pos, g.f32(1)));
     const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, world));
     const vHull = g.varying(instanceHullFlag, 'v_ishull');
-    const vWorld = g.varying(world.xyz, 'v_pworld');
 
-    const base = g.Var('base', g.mix(grey(g.f32(0.45)), hullColor(vWorld), vHull));
+    const base = g.Var('base', depthInk(g.mix(grey(g.f32(0.55)), ink(ACCENT), vHull), world.xyz, 1.8));
 
     const material = new g.Material({ vertex: clip, fragment: g.vec4(base, g.f32(1)) });
     const mesh = new g.Mesh(sphereGeometry, material);
@@ -217,11 +210,11 @@ function buildHull(points: number[], hullIndices: number[]): g.Mesh {
     // Face shading separates adjacent planes without drawing every triangulation edge.
     const normal = g.normalize(g.cross(g.dpdx(vWorld), g.dpdy(vWorld)));
     const diffuse = normal.dot(g.vec3(0.6, 1, 0.8).normalize()).abs();
-    const color = hullColor(vWorld).mul(g.f32(0.55).add(diffuse.mul(g.f32(0.45))));
+    const color = depthInk(grey(g.f32(0.18).add(diffuse.mul(g.f32(0.5)))), world.xyz, 1.8);
 
     const material = new g.Material({
         vertex: clip,
-        fragment: g.vec4(color, g.f32(0.24)),
+        fragment: g.vec4(color, g.f32(0.35)),
         transparent: true,
         cullMode: 'back',
         depthWrite: false,

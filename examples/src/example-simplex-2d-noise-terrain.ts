@@ -1,8 +1,7 @@
 import * as g from 'gpucat';
 import { d } from 'gpucat';
 import { simplex2d } from 'math/noise';
-import { createInfo } from './common/info';
-import { grey, ink, isoline, light } from './common/ink';
+import { depthInk, grey, ink, isoline, light } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, spectrum } from './common/theme';
 
@@ -34,8 +33,8 @@ const scene = new g.Scene();
 
 const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position[0] = 0;
-camera.position[1] = 4.2;
-camera.position[2] = 7.1;
+camera.position[1] = 5.04;
+camera.position[2] = 8.52;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
@@ -110,17 +109,12 @@ const vWorld = g.varying(world.xyz, 'v_world');
 // A broad neutral fill connects the contours into a readable surface.
 const normal = g.normalize(g.cross(g.dpdx(vWorld), g.dpdy(vWorld)));
 const facing = normal.dot(g.vec3(0.4, 0.9, 0.3).normalize()).abs();
-const surface = grey(g.f32(0.32).add(facing.mul(g.f32(0.2))));
-const contour = g.max(isoline(height.div(g.f32(0.15)), 1), isoline(height.div(g.f32(0.6)), 2));
-const accent = isoline(height.sub(g.f32(0.45)).div(g.f32(20)), 2);
+const surface = grey(g.f32(0.035).add(facing.mul(g.f32(0.065))));
+const contour = g.max(isoline(height.div(g.f32(0.15)), 0.65), isoline(height.div(g.f32(0.6)), 1.1));
+const accent = isoline(height.sub(g.f32(0.45)).div(g.f32(20)), 1.25);
 const color = g.mix(g.mix(surface, light, contour), ink(ACCENT), accent);
-const material = new g.Material({ vertex: clip, fragment: g.vec4(color, g.f32(1)), cullMode: 'none' });
+const material = new g.Material({ vertex: clip, fragment: g.vec4(depthInk(color, world.xyz, 4), g.f32(1)), cullMode: 'none' });
 scene.add(new g.Mesh(geometry, material));
-
-/* readout */
-
-const readout = createInfo();
-readout.innerHTML = `Elevation contours · simplex2d<br>Thin 0.15 · Bold 0.60 · <span style="color:${ACCENT}">━ Height 0.45</span>`;
 
 /* render */
 

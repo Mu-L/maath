@@ -2,7 +2,7 @@ import * as g from 'gpucat';
 import { d } from 'gpucat';
 import { quat, type Vec3, vec3 as v3 } from 'math';
 import { createPanel } from './common/dash';
-import { ink, light, pixels } from './common/ink';
+import { depthInk, grey, ink, light, pixels } from './common/ink';
 import { createRenderer } from './common/renderer';
 import { clearColor, spectrum } from './common/theme';
 
@@ -22,13 +22,13 @@ const ACCENT = spectrum[2];
 /* hand-built arrow geometry, pointing along +Y, centred on the origin */
 
 function buildArrowGeometry(): { positions: Float32Array; normals: Float32Array; indices: Uint32Array } {
-    const R = 18; // radial segments
+    const R = 6; // radial segments
     const shaftBottom = -0.42;
     const shaftTop = 0.06;
     const shaftR = 0.045;
     const headBase = 0.06;
     const headTip = 0.42;
-    const headR = 0.13;
+    const headR = 0.1;
 
     const positions: number[] = [];
     const normals: number[] = [];
@@ -107,8 +107,8 @@ const scene = new g.Scene();
 
 const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position[0] = 0;
-camera.position[1] = 4.6;
-camera.position[2] = 8.2;
+camera.position[1] = 5.52;
+camera.position[2] = 9.84;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
@@ -132,7 +132,10 @@ geometry.setIndex(g.createIndexBuffer(arrow.indices));
 const pos = g.attribute('position', d.vec3f);
 const world = g.mul(g.modelWorldMatrix, g.vec4(pos, g.f32(1)));
 const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, world));
-const material = new g.Material({ vertex: clip, fragment: g.vec4(light, g.f32(1)), cullMode: 'none' });
+const faceNormal = g.varying(g.normalize(g.mul(g.modelNormalMatrix, g.attribute('normal', d.vec3f))), 'v_face_normal');
+const facing = faceNormal.dot(g.vec3(-0.4, 0.8, 0.45).normalize()).max(g.f32(0));
+const arrowInk = grey(g.f32(0.18).add(facing.mul(g.f32(0.7))));
+const material = new g.Material({ vertex: clip, fragment: g.vec4(depthInk(arrowInk, world.xyz, 4), g.f32(1)), cullMode: 'none' });
 
 // arrows, laid out on the ground grid
 type Arrow = { mesh: g.Mesh; pos: Vec3 };
@@ -158,7 +161,7 @@ for (let i = 0; i <= GRID; i++) {
 }
 const grid = new g.LineSegments(
     new g.LineSegmentsGeometry(new Float32Array(gridPoints), gridPoints.length / 3),
-    new g.LineMaterial({ color: g.vec4(light, g.f32(0.2)), lineWidth: pixels(1.25), transparent: true }),
+    new g.LineMaterial({ color: g.vec4(light, g.f32(0.2)), lineWidth: pixels(0.8), transparent: true }),
 );
 scene.add(grid);
 
