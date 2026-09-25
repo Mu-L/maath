@@ -19,7 +19,7 @@
     },
     "example-convex-hull-3d": {
         "title": "Convex Hull 3D",
-        "description": "A point cloud and its convex hull, computed with math's quickhull3. Purple marks hull vertices above a muted faceted shell, with the rear points fading into the background. Choose the Stanford bunny, primitives, or random points.",
+        "description": "A point cloud and its convex hull, computed with math's quickhull3. Cyan and purple connect hull vertices to a translucent faceted shell, preserving depth cues as the cloud rotates. Choose the Stanford bunny, primitives, or random points.",
         "tags": ["quickhull3", "geometry", "convex-hull", "vec3"],
         "category": "geometry"
     },
