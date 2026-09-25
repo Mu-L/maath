@@ -288,13 +288,14 @@ function createField(geometry: g.Geometry, count: number, box: boolean) {
     const vTint = g.varying(shading.yzw, 'v_tint');
     const uv = g.varying(g.attribute('uv', d.vec2f), 'v_uv');
     const edge = box
-        ? g.max(isoline(uv.x, 1.1), isoline(uv.y, 1.1))
+        ? g.max(isoline(uv.x, 2.4), isoline(uv.y, 2.4))
         : g.f32(1).sub(g.smoothstep(g.f32(0.35), g.f32(0.55), vNormal.z.abs()));
-    const seenEdge = box ? g.max(isoline(uv.x, 2.2), isoline(uv.y, 2.2)) : edge;
-    const unseenColor = g.mix(ink(palette.base), light, edge.mul(g.f32(0.4)));
+    const seenEdge = box ? g.max(isoline(uv.x, 3.6), isoline(uv.y, 3.6)) : edge;
+    const unseenColor = g.mix(ink(palette.base), light, edge.mul(g.f32(0.6)));
     const seenColor = g.mix(ink(palette.base), vTint, g.f32(0.045).add(seenEdge.mul(g.f32(0.95))));
     const color = g.mix(unseenColor, seenColor, vSeen);
-    const mesh = new g.Mesh(geometry, new g.Material({ vertex: clip, fragment: g.vec4(depthInk(color, world, 6), g.f32(1)) }));
+    const shaded = g.mix(color, depthInk(color, world, 6), g.f32(0.6));
+    const mesh = new g.Mesh(geometry, new g.Material({ vertex: clip, fragment: g.vec4(shaded, g.f32(1)) }));
     mesh.count = count;
     scene.add(mesh);
 
@@ -334,7 +335,11 @@ orbField.extentBuffer.needsUpdate = true;
 // the twelve edges of the eight corners: near ring, far ring, and the struts
 const EDGES = [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7];
 
-const coneMaterial = new g.LineMaterial({ color: g.vec4(lineInk(light, 6), g.f32(0.8)), lineWidth: pixels(1.1), transparent: true });
+const coneMaterial = new g.LineMaterial({
+    color: g.vec4(g.mix(light, lineInk(light, 6), g.f32(0.6)), g.f32(0.95)),
+    lineWidth: pixels(2),
+    transparent: true,
+});
 coneMaterial.depthTest = false;
 coneMaterial.depthWrite = false;
 
