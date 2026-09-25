@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/readme-header.gif" alt="npm i math, surrounded by softly shimmering stars" width="100%" />
+</p>
+
 # math
 
 Math is the playful web's math engine.
