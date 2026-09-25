@@ -1,94 +1,94 @@
 {
-  "name": "math",
-  "version": "0.1.0",
-  "author": "Isaac Mason <isaac@isaacmason.com>",
-  "description": "a collection of math helpers for graphics and simulations",
-  "keywords": [
-    "math",
-    "vector",
-    "matrix",
-    "quaternion",
-    "euler",
-    "random",
-    "noise"
-  ],
-  "license": "MIT",
-  "repository": "github:pmndrs/math",
-  "homepage": "https://github.com/pmndrs/math",
-  "bugs": {
-    "url": "https://github.com/pmndrs/math/issues"
-  },
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/src/index.d.ts",
-  "sideEffects": false,
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/src/index.d.ts"
+    "name": "math",
+    "version": "0.1.0",
+    "author": "Isaac Mason <isaac@isaacmason.com>",
+    "description": "🧮 The playful web's math engine",
+    "keywords": [
+        "math",
+        "vector",
+        "matrix",
+        "quaternion",
+        "euler",
+        "random",
+        "noise"
+    ],
+    "license": "MIT",
+    "repository": "github:pmndrs/math",
+    "homepage": "https://github.com/pmndrs/math",
+    "bugs": {
+        "url": "https://github.com/pmndrs/math/issues"
     },
-    "./shapes": {
-      "import": "./dist/shapes/index.js",
-      "types": "./dist/src/shapes/index.d.ts"
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/src/index.d.ts",
+    "sideEffects": false,
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/src/index.d.ts"
+        },
+        "./shapes": {
+            "import": "./dist/shapes/index.js",
+            "types": "./dist/src/shapes/index.d.ts"
+        },
+        "./geometry": {
+            "import": "./dist/geometry/index.js",
+            "types": "./dist/src/geometry/index.d.ts"
+        },
+        "./time": {
+            "import": "./dist/time/index.js",
+            "types": "./dist/src/time/index.d.ts"
+        },
+        "./random": {
+            "import": "./dist/random/index.js",
+            "types": "./dist/src/random/index.d.ts"
+        },
+        "./noise": {
+            "import": "./dist/noise/index.js",
+            "types": "./dist/src/noise/index.d.ts"
+        },
+        "./color": {
+            "import": "./dist/color/index.js",
+            "types": "./dist/src/color/index.d.ts"
+        },
+        "./ik": {
+            "import": "./dist/ik/index.js",
+            "types": "./dist/src/ik/index.d.ts"
+        }
     },
-    "./geometry": {
-      "import": "./dist/geometry/index.js",
-      "types": "./dist/src/geometry/index.d.ts"
+    "files": [
+        "dist",
+        "skills",
+        "LICENSE",
+        "README.md",
+        "API.md"
+    ],
+    "scripts": {
+        "build": "rm -rf ./dist && pnpm run build:bundle && pnpm run build:dts",
+        "build:bundle": "rollup --config rollup.config.mjs",
+        "build:dts": "tsc -p tsconfig.build.json && node scripts/add-js-extensions-dts.mjs",
+        "build:examples": "pnpm --filter math-examples build",
+        "dev:examples": "pnpm --filter math-examples dev",
+        "build:website": "pnpm --filter website build",
+        "format": "biome format --write src/. tst/.",
+        "lint": "biome lint --write src/. tst/.",
+        "test": "vitest run ./tst",
+        "bench": "pnpm --filter benches exec labs",
+        "typecheck-docs": "tsc --project docs/tsconfig.json --noEmit",
+        "docs": "(cd docs && node ./build.js)",
+        "typedoc": "typedoc --tsconfig ./tsconfig.json --name \"math docs\" --out ./dist-typedoc ./src/index.ts ./src/shapes/index.ts ./src/geometry/index.ts ./src/time/index.ts ./src/random/index.ts ./src/noise/index.ts ./src/color/index.ts ./src/ik/index.ts",
+        "build:docs": "pnpm run docs && pnpm run typedoc",
+        "release": "pnpm run build && pnpm run test && pnpm run build:examples && pnpm run build:docs && pnpm run build:website"
     },
-    "./time": {
-      "import": "./dist/time/index.js",
-      "types": "./dist/src/time/index.d.ts"
-    },
-    "./random": {
-      "import": "./dist/random/index.js",
-      "types": "./dist/src/random/index.d.ts"
-    },
-    "./noise": {
-      "import": "./dist/noise/index.js",
-      "types": "./dist/src/noise/index.d.ts"
-    },
-    "./color": {
-      "import": "./dist/color/index.js",
-      "types": "./dist/src/color/index.d.ts"
-    },
-    "./ik": {
-      "import": "./dist/ik/index.js",
-      "types": "./dist/src/ik/index.d.ts"
+    "packageManager": "pnpm@11.22.0",
+    "devDependencies": {
+        "@biomejs/biome": "^2.5.6",
+        "@rollup/plugin-node-resolve": "^16",
+        "@rollup/plugin-typescript": "^12",
+        "rollup": "^4",
+        "tslib": "^2.8.1",
+        "typedoc": "^0.28.16",
+        "typescript": "^5.9.2",
+        "vitest": "^3.2.4"
     }
-  },
-  "files": [
-    "dist",
-    "skills",
-    "LICENSE",
-    "README.md",
-    "API.md"
-  ],
-  "scripts": {
-    "build": "rm -rf ./dist && pnpm run build:bundle && pnpm run build:dts",
-    "build:bundle": "rollup --config rollup.config.mjs",
-    "build:dts": "tsc -p tsconfig.build.json && node scripts/add-js-extensions-dts.mjs",
-    "build:examples": "pnpm --filter math-examples build",
-    "dev:examples": "pnpm --filter math-examples dev",
-    "build:website": "pnpm --filter website build",
-    "format": "biome format --write src/. tst/.",
-    "lint": "biome lint --write src/. tst/.",
-    "test": "vitest run ./tst",
-    "bench": "pnpm --filter benches exec labs",
-    "typecheck-docs": "tsc --project docs/tsconfig.json --noEmit",
-    "docs": "(cd docs && node ./build.js)",
-    "typedoc": "typedoc --tsconfig ./tsconfig.json --name \"math docs\" --out ./dist-typedoc ./src/index.ts ./src/shapes/index.ts ./src/geometry/index.ts ./src/time/index.ts ./src/random/index.ts ./src/noise/index.ts ./src/color/index.ts ./src/ik/index.ts",
-    "build:docs": "pnpm run docs && pnpm run typedoc",
-    "release": "pnpm run build && pnpm run test && pnpm run build:examples && pnpm run build:docs && pnpm run build:website"
-  },
-  "packageManager": "pnpm@11.22.0",
-  "devDependencies": {
-    "@biomejs/biome": "^2.5.6",
-    "@rollup/plugin-node-resolve": "^16",
-    "@rollup/plugin-typescript": "^12",
-    "rollup": "^4",
-    "tslib": "^2.8.1",
-    "typedoc": "^0.28.16",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
-  }
 }

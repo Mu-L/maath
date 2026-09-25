@@ -1,6 +1,6 @@
 # math
 
-math is a collection of math helpers for graphics and simulations.
+Math is the playful web's math engine.
 
 - **High performance**: allocation-free, monomorphic, benchmarked
 - **Tiny**: mean and lean, tree-shakable, only pay for what you use
@@ -108,7 +108,7 @@ import { fabrik2, fabrik3 } from 'math/ik'; // inverse kinematics
 - **[Online API docs](https://pmndrs.github.io/math/docs/)** — the full typedoc reference, with search and cross-links.
 - **[What's inside](#whats-inside)** — jump straight to a module or namespace.
 
-## Acknowledgements:
+## Acknowledgements
 
 - The vec*, quat*, mat* code started life as a port of mathcat, which started as a TypeScript port of glMatrix (https://glmatrix.net/)
 - The simplex noise is adapted from https://github.com/josephg/noisejs
