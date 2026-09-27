@@ -61,6 +61,12 @@ describe('scalar', () => {
             expect(smoothstep(10, 20, 5)).toBe(0);
             expect(smoothstep(10, 20, 25)).toBe(1);
         });
+
+        it('should step at the edge when the edges are equal', () => {
+            expect(smoothstep(10, 10, 9)).toBe(0);
+            expect(smoothstep(10, 10, 10)).toBe(0);
+            expect(smoothstep(10, 10, 11)).toBe(1);
+        });
     });
 
     describe('smootherstep', () => {
@@ -74,6 +80,12 @@ describe('scalar', () => {
         it('should clamp outside the edges', () => {
             expect(smootherstep(10, 20, 5)).toBe(0);
             expect(smootherstep(10, 20, 25)).toBe(1);
+        });
+
+        it('should step at the edge when the edges are equal', () => {
+            expect(smootherstep(10, 10, 9)).toBe(0);
+            expect(smootherstep(10, 10, 10)).toBe(0);
+            expect(smootherstep(10, 10, 11)).toBe(1);
         });
     });
 });
