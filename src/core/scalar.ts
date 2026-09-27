@@ -119,21 +119,24 @@ export function remapClamp(value: number, inLow: number, inHigh: number, outLow:
 
 /**
  * Smooth Hermite step from 0 to 1 as `x` goes from `edge0` to `edge1`, matching GLSL `smoothstep`.
- * Clamped outside the edges, with zero slope at both of them.
+ * Clamped outside the edges, with zero slope at both of them. Equal edges act as a step at `edge0`,
+ * matching what GPU `clamp` typically produces.
  *
  * https://en.wikipedia.org/wiki/Smoothstep
  */
 export function smoothstep(edge0: number, edge1: number, x: number): number {
+    if (edge0 === edge1) return x <= edge0 ? 0 : 1;
     const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
     return t * t * (3 - 2 * t);
 }
 
 /**
  * Ken Perlin's smootherstep, like smoothstep but with zero slope and curvature at both edges.
- * Same curve as `fade`, clamped outside the edges.
+ * Same curve as `fade`, clamped outside the edges. Equal edges act as a step at `edge0`.
  *
  * https://en.wikipedia.org/wiki/Smoothstep#Variations
  */
 export function smootherstep(edge0: number, edge1: number, x: number): number {
+    if (edge0 === edge1) return x <= edge0 ? 0 : 1;
     return fade(clamp((x - edge0) / (edge1 - edge0), 0, 1));
 }
