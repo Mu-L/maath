@@ -2,7 +2,7 @@ import * as g from 'gpucat';
 import { d } from 'gpucat';
 import { mat4, quat, vec3 as v3 } from 'math';
 import { quickhull3 } from 'math/geometry';
-import { mulberry32 } from 'math/random';
+import { mulberry32, random } from 'math/random';
 import { createPanel } from './common/dash';
 import { grey, ink } from './common/ink';
 import { createRenderer } from './common/renderer';
@@ -59,26 +59,26 @@ function pyramid(): number[] {
     return [-1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 0, 1.5, 0, 0, 0.5, 0, 0.5, 0.3, 0.5];
 }
 
+const _point = v3.create();
+
 function sphereShell(seed: number): number[] {
     const rng = mulberry32.create(seed);
+    const next = () => mulberry32.sample(rng);
     const pts: number[] = [];
     for (let i = 0; i < 80; i++) {
-        const u = mulberry32.sample(rng) * 2 - 1;
-        const t = mulberry32.sample(rng) * Math.PI * 2;
-        const s = Math.sqrt(1 - u * u);
-        pts.push(Math.cos(t) * s, Math.sin(t) * s, u);
+        random.vec3(_point, next);
+        pts.push(_point[0], _point[1], _point[2]);
     }
     return pts;
 }
 
 function randomCloud(n: number, seed: number): number[] {
     const rng = mulberry32.create(seed);
+    const next = () => mulberry32.sample(rng);
     const pts: number[] = [];
-    while (pts.length < n * 3) {
-        const x = mulberry32.sample(rng) * 2 - 1;
-        const y = mulberry32.sample(rng) * 2 - 1;
-        const z = mulberry32.sample(rng) * 2 - 1;
-        if (x * x + y * y + z * z <= 1) pts.push(x, y, z);
+    for (let i = 0; i < n; i++) {
+        random.inSphere(_point, next);
+        pts.push(_point[0], _point[1], _point[2]);
     }
     return pts;
 }
