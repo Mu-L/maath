@@ -74,14 +74,14 @@ export function set(out: Polar, r: number, theta: number): Polar {
 }
 
 /**
- * Sets r=1, preserving the angle. No-op on the angle if r is already zero.
+ * Sets r=1, preserving the angle. If r is zero it stays zero.
  *
  * @param out the receiving Polar
  * @param a the source Polar
  * @returns out
  */
 export function normalize(out: Polar, a: Const<Polar>): Polar {
-    out[0] = 1;
+    out[0] = a[0] === 0 ? 0 : 1;
     out[1] = a[1];
     return out;
 }

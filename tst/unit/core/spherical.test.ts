@@ -32,6 +32,12 @@ describe('spherical', () => {
         expect(out).toEqual([1, 0.7, 1.3]);
     });
 
+    it('normalize leaves r=0 at zero', () => {
+        const out: Spherical = [9, 9, 9];
+        spherical.normalize(out, [0, 0.7, 1.3]);
+        expect(out).toEqual([0, 0.7, 1.3]);
+    });
+
     it('scale multiplies r only', () => {
         const out: Spherical = [0, 0, 0];
         spherical.scale(out, [2, 0.7, 1.3], 3);

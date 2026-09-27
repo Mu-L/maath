@@ -75,14 +75,14 @@ export function set(out: Spherical, r: number, theta: number, phi: number): Sphe
 }
 
 /**
- * Sets r=1, preserving the angles. No-op if r is already zero.
+ * Sets r=1, preserving the angles. If r is zero it stays zero.
  *
  * @param out the receiving Spherical
  * @param a the source Spherical
  * @returns out
  */
 export function normalize(out: Spherical, a: Const<Spherical>): Spherical {
-    out[0] = 1;
+    out[0] = a[0] === 0 ? 0 : 1;
     out[1] = a[1];
     out[2] = a[2];
     return out;
