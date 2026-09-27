@@ -19,6 +19,7 @@ export function create(): Sphere {
  * but is not the minimal enclosing sphere.
  *
  * With no points (n <= 0) the sphere is set to the origin with radius 0.
+ * NaN coordinates are not supported and give an unspecified result.
  *
  * @param out the sphere to store the result
  * @param points points as a flat array `[x0, y0, z0, x1, y1, z1, ...]`

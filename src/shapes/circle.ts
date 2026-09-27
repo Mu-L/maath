@@ -14,6 +14,7 @@ export function create(): Circle {
  * but is not the minimal enclosing circle.
  *
  * With no points (n <= 0) the circle is set to the origin with radius 0.
+ * NaN coordinates are not supported and give an unspecified result.
  *
  * @param out the circle to store the result
  * @param points points as a flat array `[x0, y0, x1, y1, ...]`
