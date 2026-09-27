@@ -12,6 +12,13 @@ describe('circle', () => {
             expect(out.radius).toBeCloseTo(Math.sqrt(5));
         });
 
+        it('should enclose the farthest point despite sqrt rounding down', () => {
+            // sqrt(3.25) squared is just under 3.25
+            const out = circle.setFromPoints(circle.create(), [0, 0, 3, 2], 2);
+
+            expect(out.radius * out.radius).toBeGreaterThanOrEqual(3.25);
+        });
+
         it('should read only the first n points', () => {
             const out: Circle = { center: [9, 9], radius: 9 };
 

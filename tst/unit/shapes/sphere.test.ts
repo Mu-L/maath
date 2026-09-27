@@ -22,6 +22,14 @@ describe('sphere', () => {
             expect(out.radius).toBeCloseTo(Math.sqrt(14));
         });
 
+        it('should contain the farthest point despite sqrt rounding down', () => {
+            // sqrt(0.75) squared is just under 0.75
+            const out = sphere.setFromPoints(sphere.create(), [0, 0, 0, 1, 1, 1], 2);
+
+            expect(sphere.containsPoint(out, [0, 0, 0])).toBe(true);
+            expect(sphere.containsPoint(out, [1, 1, 1])).toBe(true);
+        });
+
         it('should set the origin with radius 0 for no points', () => {
             const out: Sphere = { center: [9, 9, 9], radius: 9 };
             sphere.setFromPoints(out, [], 0);

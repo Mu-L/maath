@@ -13,7 +13,7 @@ export function create(): Circle {
  * and the radius is the distance to the farthest point. This is fast and always encloses every point,
  * but is not the minimal enclosing circle.
  *
- * With no points the circle is set to the origin with radius 0.
+ * With no points (n <= 0) the circle is set to the origin with radius 0.
  *
  * @param out the circle to store the result
  * @param points points as a flat array `[x0, y0, x1, y1, ...]`
@@ -21,7 +21,7 @@ export function create(): Circle {
  * @returns out
  */
 export function setFromPoints(out: Circle, points: readonly number[], n: number): Circle {
-    if (n === 0) {
+    if (n <= 0) {
         out.center[0] = 0;
         out.center[1] = 0;
         out.radius = 0;
@@ -55,6 +55,9 @@ export function setFromPoints(out: Circle, points: readonly number[], n: number)
 
     out.center[0] = cx;
     out.center[1] = cy;
-    out.radius = Math.sqrt(maxSq);
+    // sqrt can round down so that radius * radius < maxSq and the farthest point tests as outside.
+    // one relative epsilon step up is enough to cover that rounding.
+    const radius = Math.sqrt(maxSq);
+    out.radius = radius * radius < maxSq ? radius * (1 + Number.EPSILON) : radius;
     return out;
 }
