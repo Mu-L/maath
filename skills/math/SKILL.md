@@ -7,8 +7,6 @@ description: Use when writing or reviewing geometry, simulation, collision, navi
 
 Write data-oriented TypeScript on top of the npm `math` package: plain data, free functions, no classes, no allocation in hot paths.
 
-API docs are in `API.md` — every export with its signature, grouped by module and flat enough to grep. Find it at `node_modules/math/API.md` in a consuming project, or at the repo root when working on `math` itself.
-
 ## Types
 
 Every type is a plain fixed-length tuple of numbers — no classes, no wrappers, and not a typed array:
@@ -66,7 +64,7 @@ Marshal in, compute, marshal out — and allocate on neither crossing. Keep the 
 
 ### three.js
 
-Marshal between Three objects and reusable `math` tuples at the boundary. Pass a target to `toArray` to avoid allocation. See `API.md` for the `math/three` matrix, instancing, attribute, and culling helpers.
+Marshal between Three objects and reusable `math` tuples at the boundary. Pass a target to `toArray` to avoid allocation.
 
 ```ts
 import { quat, vec3, type Vec3 } from 'math';
