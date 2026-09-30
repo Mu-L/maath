@@ -460,6 +460,8 @@ export function fromMat3(out: Quat, m: Const<Mat3>): Quat {
     return out;
 }
 
+const _fromMat4_m3 = /* @__PURE__ */ mat3.create();
+
 /**
  * Calculates a quaternion from a 4x4 rotation matrix
  * Extracts the 3x3 rotation part and calls fromMat3
@@ -469,9 +471,8 @@ export function fromMat3(out: Quat, m: Const<Mat3>): Quat {
  * @returns out
  */
 export function fromMat4(out: Quat, m: Const<Mat4>): Quat {
-    const m3 = mat3.create();
-    mat3.fromMat4(m3, m);
-    return fromMat3(out, m3);
+    mat3.fromMat4(_fromMat4_m3, m);
+    return fromMat3(out, _fromMat4_m3);
 }
 
 /**

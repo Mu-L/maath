@@ -1314,6 +1314,8 @@ export function fromRotationTranslation(out: Mat4, q: Const<Quat> | Const<Quat2>
     return out;
 }
 
+const _fromQuat2_translation: Vec3 = [0, 0, 0];
+
 /**
  * Creates a new mat4 from a dual quat.
  *
@@ -1322,7 +1324,6 @@ export function fromRotationTranslation(out: Mat4, q: Const<Quat> | Const<Quat2>
  * @returns mat4 receiving operation result
  */
 export function fromQuat2(out: Mat4, a: Const<Quat2>): Mat4 {
-    const translation = [0, 0, 0] as Vec3;
     const bx = -a[0];
     const by = -a[1];
     const bz = -a[2];
@@ -1335,15 +1336,15 @@ export function fromQuat2(out: Mat4, a: Const<Quat2>): Mat4 {
     const magnitude = bx * bx + by * by + bz * bz + bw * bw;
     //Only scale if it makes sense
     if (magnitude > 0) {
-        translation[0] = ((ax * bw + aw * bx + ay * bz - az * by) * 2) / magnitude;
-        translation[1] = ((ay * bw + aw * by + az * bx - ax * bz) * 2) / magnitude;
-        translation[2] = ((az * bw + aw * bz + ax * by - ay * bx) * 2) / magnitude;
+        _fromQuat2_translation[0] = ((ax * bw + aw * bx + ay * bz - az * by) * 2) / magnitude;
+        _fromQuat2_translation[1] = ((ay * bw + aw * by + az * bx - ax * bz) * 2) / magnitude;
+        _fromQuat2_translation[2] = ((az * bw + aw * bz + ax * by - ay * bx) * 2) / magnitude;
     } else {
-        translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2;
-        translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
-        translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
+        _fromQuat2_translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2;
+        _fromQuat2_translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
+        _fromQuat2_translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
     }
-    fromRotationTranslation(out, a, translation);
+    fromRotationTranslation(out, a, _fromQuat2_translation);
     return out;
 }
 
@@ -1392,6 +1393,8 @@ export function getScaling(out: Vec3, mat: Const<Mat4>): Vec3 {
     return out;
 }
 
+const _getRotation_scaling: Vec3 = [0, 0, 0];
+
 /**
  * Returns a quaternion representing the rotational component
  *  of a transformation matrix. If a matrix is built with
@@ -1402,12 +1405,11 @@ export function getScaling(out: Vec3, mat: Const<Mat4>): Vec3 {
  * @return out
  */
 export function getRotation(out: Quat, mat: Const<Mat4>): Quat {
-    const scaling = [0, 0, 0] as Vec3;
-    getScaling(scaling, mat);
+    getScaling(_getRotation_scaling, mat);
 
-    const is1 = 1 / scaling[0];
-    const is2 = 1 / scaling[1];
-    const is3 = 1 / scaling[2];
+    const is1 = 1 / _getRotation_scaling[0];
+    const is2 = 1 / _getRotation_scaling[1];
+    const is3 = 1 / _getRotation_scaling[2];
 
     const sm11 = mat[0] * is1;
     const sm12 = mat[1] * is2;
