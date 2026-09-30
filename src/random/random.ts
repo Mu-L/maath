@@ -58,7 +58,7 @@ export function choice<T>(random: RandomGenerator, items: readonly T[]): T {
 }
 
 /**
- * Writes a random unit-length Vec2 into out.
+ * Writes a random direction (unit-length Vec2) into out.
  * @param out the receiving vector
  * @param random the random generator to use
  * @returns out
@@ -71,7 +71,7 @@ export function vec2(out: Vec2, random: RandomGenerator): Vec2 {
 }
 
 /**
- * Writes a random unit-length Vec3 into out.
+ * Writes a random direction (unit-length Vec3) into out.
  * @param out the receiving vector
  * @param random the random generator to use
  * @returns out
@@ -84,6 +84,39 @@ export function vec3(out: Vec3, random: RandomGenerator): Vec3 {
     out[0] = Math.cos(r) * zScale;
     out[1] = Math.sin(r) * zScale;
     out[2] = z;
+    return out;
+}
+
+/**
+ * Writes a uniformly distributed random point inside the unit circle into out.
+ * See vec2 for a point on the circle (a direction).
+ * @param out the receiving vector
+ * @param random the random generator to use
+ * @returns out
+ */
+export function inCircle(out: Vec2, random: RandomGenerator): Vec2 {
+    vec2(out, random);
+    // sqrt keeps the density uniform by area rather than bunching at the centre
+    const s = Math.sqrt(random());
+    out[0] *= s;
+    out[1] *= s;
+    return out;
+}
+
+/**
+ * Writes a uniformly distributed random point inside the unit sphere into out.
+ * See vec3 for a point on the sphere (a direction).
+ * @param out the receiving vector
+ * @param random the random generator to use
+ * @returns out
+ */
+export function inSphere(out: Vec3, random: RandomGenerator): Vec3 {
+    vec3(out, random);
+    // cbrt keeps the density uniform by volume rather than bunching at the centre
+    const s = Math.cbrt(random());
+    out[0] *= s;
+    out[1] *= s;
+    out[2] *= s;
     return out;
 }
 

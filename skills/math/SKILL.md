@@ -7,8 +7,6 @@ description: Use when writing or reviewing geometry, simulation, collision, navi
 
 Write data-oriented TypeScript on top of the npm `math` package: plain data, free functions, no classes, no allocation in hot paths.
 
-API docs are in `API.md` — every export with its signature, grouped by module and flat enough to grep. Find it at `node_modules/math/API.md` in a consuming project, or at the repo root when working on `math` itself.
-
 ## Types
 
 Every type is a plain fixed-length tuple of numbers — no classes, no wrappers, and not a typed array:
@@ -66,38 +64,7 @@ Marshal in, compute, marshal out — and allocate on neither crossing. Keep the 
 
 ### three.js
 
-Choose the integration based on who drives the hot path:
-
-- **Extend** when math updates many objects each frame. Use `extend(scene)` from `math/three` and cached transform records.
-- **Don't extend** when mostly using Three's transform API, frequently rebuilding the hierarchy, or only needing occasional math. Keep stock objects and marshal through reusable scratch.
-
-The `math/three` helpers for matrices, instancing, attributes, and culling work either way. See `API.md` for their usage. Instance matrix views use float32 storage, so keep simulation state separate.
-
-**What gets faster.** The tuple path can substantially speed up CPU transform updates by eliminating copies between math and Three, deferring quaternion-to-Euler conversion until Euler angles are read, and composing local matrices and propagating world matrices in a flat pass. Gains depend on the workload, so compare representative frames.
-
-**Use the hot path.** For objects already in `scene`, extend and cache records at setup. Mutate their tuples directly in the loop. `rotation` is a quaternion.
-
-```ts
-import { quat, vec3, type Vec3 } from 'math';
-import { extend, transformOf } from 'math/three';
-
-extend(scene);
-const transforms = objects.map(transformOf);
-
-function step(velocities: Vec3[], delta: number): void {
-    for (let i = 0; i < transforms.length; i++) {
-        const t = transforms[i];
-        vec3.scaleAndAdd(t.position, t.position, velocities[i], delta);
-        quat.rotateY(t.rotation, t.rotation, delta);
-    }
-}
-```
-
-Rendering propagates matrices automatically. Call `propagate(scene)` once before queries that need current world matrices. Cache records only while objects stay extended.
-
-**What costs more.** Extending allocates records and replaces transform properties with views. Adding, removing, or reparenting objects requires rebuilding the flat traversal. Three-style property access goes through accessors, and Euler reads check for quaternion changes and derive angles when needed. Heavy use of these paths can offset the tuple gains. Custom `updateMatrixWorld` overrides retain their own traversal.
-
-**Without extension.** This performs the same update on stock Three objects. Allocate scratch once, marshal in, compute, and marshal out. Always pass a target to `toArray` to avoid allocation.
+Marshal between Three objects and reusable `math` tuples at the boundary. Pass a target to `toArray` to avoid allocation.
 
 ```ts
 import { quat, vec3, type Vec3 } from 'math';

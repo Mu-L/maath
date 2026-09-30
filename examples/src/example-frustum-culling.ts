@@ -27,11 +27,11 @@ import { clearColor, palette, rgb, spectrum } from './common/theme';
 const MAX_AGENTS = 16;
 const ACCENT = spectrum[0];
 const BLOCKS = 8; // city blocks per side, so BLOCKS + 1 streets and intersections
-const BLOCK = 4; // centre to centre of neighbouring streets
+const BLOCK = 1.1; // centre to centre of neighbouring streets
 const FIELD = BLOCKS * BLOCK;
-const ROAD = 1.1; // kept clear of buildings
-const PER_BLOCK = 8;
-const ORBS = 120;
+const ROAD = 0.32; // kept clear of buildings
+const PER_BLOCK = 1;
+const ORBS = 16;
 const EYE_HEIGHT = 0.75;
 const TURN_RATE = 7; // how fast an agent swings to face a new street
 
@@ -42,7 +42,7 @@ function street(i: number): number {
 
 type Settings = { agents: number; fov: number; range: number; speed: number; cones: boolean };
 
-const settings: Settings = { agents: 3, fov: 52, range: 5, speed: 2.2, cones: true };
+const settings: Settings = { agents: 1, fov: 52, range: 4.4, speed: 0.8, cones: true };
 
 /* the map */
 
@@ -65,8 +65,8 @@ for (let bz = 0; bz < BLOCKS; bz++) {
         const minZ = street(bz) + ROAD / 2;
         const maxZ = street(bz + 1) - ROAD / 2;
         for (let k = 0; k < PER_BLOCK; k++) {
-            const width = random.float(nextRandom, 0.25, 0.6);
-            const height = random.float(nextRandom, 0.4, 3.2);
+            const width = random.float(nextRandom, 0.35, 0.5);
+            const height = random.float(nextRandom, 0.4, 2.2);
             vec3.set(
                 _build_center,
                 random.float(nextRandom, minX + width / 2, maxX - width / 2),
@@ -149,6 +149,8 @@ function createAgent(): Agent {
 
 const agents: Agent[] = [];
 for (let i = 0; i < MAX_AGENTS; i++) agents.push(createAgent());
+agents[0].cellX = BLOCKS / 2;
+agents[0].cellZ = BLOCKS / 2;
 
 /** Picks the next street at an intersection, favouring straight on and never doubling back. */
 function turn(agent: Agent): void {
@@ -205,7 +207,7 @@ const UP: Vec3 = [0, 1, 0];
 function look(delta: number): number {
     for (let i = 0; i < seenBy.length; i++) seenBy[i] = -1;
 
-    mat4.perspectiveZO(projection, (settings.fov * Math.PI) / 180, 1.9, 0.25, settings.range);
+    mat4.perspectiveZO(projection, (settings.fov * Math.PI) / 180, 1.5, 0.25, settings.range);
 
     let seen = 0;
     for (let a = 0; a < settings.agents; a++) {
@@ -247,8 +249,8 @@ const scene = new g.Scene();
 // high and angled, so the map reads flat but the buildings still have height
 const camera = new g.PerspectiveCamera(Math.PI / 5, window.innerWidth / window.innerHeight, 0.1, 200);
 camera.position[0] = 0;
-camera.position[1] = 46;
-camera.position[2] = 46;
+camera.position[1] = 13;
+camera.position[2] = 15;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
@@ -286,13 +288,14 @@ function createField(geometry: g.Geometry, count: number, box: boolean) {
     const vTint = g.varying(shading.yzw, 'v_tint');
     const uv = g.varying(g.attribute('uv', d.vec2f), 'v_uv');
     const edge = box
-        ? g.max(isoline(uv.x, 1.1), isoline(uv.y, 1.1))
+        ? g.max(isoline(uv.x, 2.4), isoline(uv.y, 2.4))
         : g.f32(1).sub(g.smoothstep(g.f32(0.35), g.f32(0.55), vNormal.z.abs()));
-    const seenEdge = box ? g.max(isoline(uv.x, 2.2), isoline(uv.y, 2.2)) : edge;
-    const unseenColor = g.mix(ink(palette.base), light, edge.mul(g.f32(0.4)));
+    const seenEdge = box ? g.max(isoline(uv.x, 3.6), isoline(uv.y, 3.6)) : edge;
+    const unseenColor = g.mix(ink(palette.base), light, edge.mul(g.f32(0.6)));
     const seenColor = g.mix(ink(palette.base), vTint, g.f32(0.045).add(seenEdge.mul(g.f32(0.95))));
     const color = g.mix(unseenColor, seenColor, vSeen);
-    const mesh = new g.Mesh(geometry, new g.Material({ vertex: clip, fragment: g.vec4(depthInk(color, world, 20), g.f32(1)) }));
+    const shaded = g.mix(color, depthInk(color, world, 6), g.f32(0.6));
+    const mesh = new g.Mesh(geometry, new g.Material({ vertex: clip, fragment: g.vec4(shaded, g.f32(1)) }));
     mesh.count = count;
     scene.add(mesh);
 
@@ -332,7 +335,11 @@ orbField.extentBuffer.needsUpdate = true;
 // the twelve edges of the eight corners: near ring, far ring, and the struts
 const EDGES = [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7];
 
-const coneMaterial = new g.LineMaterial({ color: g.vec4(lineInk(light, 20), g.f32(0.8)), lineWidth: pixels(1.1), transparent: true });
+const coneMaterial = new g.LineMaterial({
+    color: g.vec4(g.mix(light, lineInk(light, 6), g.f32(0.6)), g.f32(0.95)),
+    lineWidth: pixels(2),
+    transparent: true,
+});
 coneMaterial.depthTest = false;
 coneMaterial.depthWrite = false;
 

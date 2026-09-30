@@ -64,6 +64,36 @@ describe('random', () => {
             expect(length(out)).toBeCloseTo(1, 6);
         });
 
+        it('inCircle should write points inside the unit circle, uniform by area', () => {
+            const next = sampler();
+            const out: Vec2 = [0, 0];
+            const n = 4000;
+            let inner = 0;
+            for (let i = 0; i < n; i++) {
+                expect(random.inCircle(out, next)).toBe(out);
+                const r = length(out);
+                expect(r).toBeLessThanOrEqual(1);
+                if (r < 0.5) inner++;
+            }
+            // the inner half-radius disc holds 1/4 of the area
+            expect(inner / n).toBeCloseTo(0.25, 1);
+        });
+
+        it('inSphere should write points inside the unit sphere, uniform by volume', () => {
+            const next = sampler();
+            const out: Vec3 = [0, 0, 0];
+            const n = 4000;
+            let inner = 0;
+            for (let i = 0; i < n; i++) {
+                expect(random.inSphere(out, next)).toBe(out);
+                const r = length(out);
+                expect(r).toBeLessThanOrEqual(1);
+                if (r < 0.5) inner++;
+            }
+            // the inner half-radius ball holds 1/8 of the volume
+            expect(inner / n).toBeCloseTo(0.125, 1);
+        });
+
         it('should be deterministic for a given seed', () => {
             const a: Vec3 = [0, 0, 0];
             const b: Vec3 = [0, 0, 0];

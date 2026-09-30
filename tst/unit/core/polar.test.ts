@@ -79,6 +79,12 @@ describe('polar', () => {
             expect(out).toEqual([1, 1.2]);
         });
 
+        it('normalize leaves r=0 at zero', () => {
+            const out: Polar = [9, 9];
+            polar.normalize(out, [0, 1.2]);
+            expect(out).toEqual([0, 1.2]);
+        });
+
         it('scale multiplies r only', () => {
             const out: Polar = [0, 0];
             polar.scale(out, [2, 1], 3);
