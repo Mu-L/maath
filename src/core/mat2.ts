@@ -295,19 +295,30 @@ export function frob(a: Const<Mat2>): number {
 }
 
 /**
- * Returns L, D and U matrices (Lower triangular, Diagonal and Upper triangular) by factorizing the input matrix
- * @param L the lower triangular matrix
- * @param D the diagonal matrix
- * @param U the upper triangular matrix
+ * Computes L, D and U matrices (Lower triangular, Diagonal and Upper triangular) by factorizing the input matrix.
+ * All three outputs are fully written.
+ * @param L receives the lower triangular matrix
+ * @param D receives the diagonal matrix
+ * @param U receives the upper triangular matrix
  * @param a the input matrix to factorize
  */
+export function LDU(L: Mat2, D: Mat2, U: Mat2, a: Const<Mat2>): void {
+    const l = a[2] / a[0];
 
-export function LDU(L: Mat2, D: Mat2, U: Mat2, a: Const<Mat2>): [Mat2, Mat2, Mat2] {
-    L[2] = a[2] / a[0];
+    L[0] = 1;
+    L[1] = 0;
+    L[2] = l;
+    L[3] = 1;
+
+    D[0] = 1;
+    D[1] = 0;
+    D[2] = 0;
+    D[3] = 1;
+
     U[0] = a[0];
     U[1] = a[1];
-    U[3] = a[3] - L[2] * U[1];
-    return [L, D, U];
+    U[2] = 0;
+    U[3] = a[3] - l * a[1];
 }
 
 /**
