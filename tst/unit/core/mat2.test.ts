@@ -234,20 +234,30 @@ describe('mat2', () => {
             const D = mat2.identity(mat2.create());
             const U = mat2.create();
 
-            const [resultL, resultD, resultU] = mat2.LDU(L, D, U, m);
+            mat2.LDU(L, D, U, m);
 
-            expect(resultL).toBe(L);
-            expect(resultD).toBe(D);
-            expect(resultU).toBe(U);
+            expect(L).toEqual([1, 0, 2, 1]);
+            expect(D).toEqual([1, 0, 0, 1]);
+            expect(U).toEqual([2, 1, 0, 1]);
 
-            // L should be lower triangular with 1s on diagonal
-            expect(L[0]).toBe(1);
-            expect(L[1]).toBe(0);
-            expect(L[3]).toBe(1);
+            // the factors reconstruct the input
+            const product = mat2.create();
+            mat2.multiply(product, U, L);
+            mat2.multiply(product, product, D);
+            expect(product).toEqual(m);
+        });
 
-            // U should have the correct values
-            expect(U[0]).toBe(2);
-            expect(U[1]).toBe(1);
+        it('should overwrite every element of the outputs', () => {
+            const m: Mat2 = [2, 1, 4, 3];
+            const L: Mat2 = [9, 9, 9, 9];
+            const D: Mat2 = [9, 9, 9, 9];
+            const U: Mat2 = [9, 9, 9, 9];
+
+            mat2.LDU(L, D, U, m);
+
+            expect(L).toEqual([1, 0, 2, 1]);
+            expect(D).toEqual([1, 0, 0, 1]);
+            expect(U).toEqual([2, 1, 0, 1]);
         });
     });
 
